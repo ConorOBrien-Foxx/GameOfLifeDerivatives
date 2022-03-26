@@ -5,8 +5,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelListener;
+// import java.awt.event.KeyListener;
 import java.awt.geom.Line2D;
 
 import java.util.LinkedList;
@@ -16,21 +21,29 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.JOptionPane;
 
 import GameOfLifeDerivatives.*;
 
 public class Display extends JComponent
-                     implements MouseListener, MouseMotionListener {
+                     implements MouseListener, MouseMotionListener, 
+                     MouseWheelListener {
+    public static JFrame frame;
+    public final static int GROUP_ID_SETTING = -2;
+    
     protected Board board;
     private int cellDisplayWidth = 26;
     private int borderSize = 4;
     private Set<Point> stroke = new HashSet<Point>();
-    int strokeButton = -1;
+    private int strokeButton = -1;
+    private boolean controlHeld = false;
+    private boolean blockFurtherMouseDown = false;
     
     public Display(Board b) {
         board = b;
         addMouseListener(this);
         addMouseMotionListener(this);
+        addMouseWheelListener(this);
     }
     
     public void reset() {
@@ -49,17 +62,47 @@ public class Display extends JComponent
     public void toggleFromMouseLocation(MouseEvent me) {
         Point p = getCellCoordinateFromMouseLocation(me.getPoint());
         if(p != null && !stroke.contains(p)) {
-            switch(strokeButton) {
-                case MouseEvent.BUTTON1:
-                    board.getCell(p).toggle();
-                    break;
-                case MouseEvent.BUTTON3:
-                    board.getCell(p).groupID++;
-                    break;
-                default:
+            Cell cell = board.getCell(p);
+            if(strokeButton == MouseEvent.BUTTON1) {
+                if((me.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) == InputEvent.CTRL_DOWN_MASK) {
+                    cell.groupID = GROUP_ID_SETTING;
+                    repaint();
+                    String gidString = JOptionPane.showInputDialog(frame, "Please enter a group ID:", null);
+                    strokeButton = -1;
+                    try {
+                        cell.groupID = Integer.parseInt(gidString);
+                    }
+                    catch(NumberFormatException ex) {
+                        cell.groupID = 0;
+                    }
+                    repaint();
                     return;
+                }
+                else {
+                    cell.toggle();
+                }
+            }
+            else if(strokeButton == MouseEvent.BUTTON3) {
+                cell.groupID++;
+            }
+            else {
+                return;
             }
             stroke.add(p);
+            repaint();
+        }
+    }
+    
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent me) {
+        Point p = getCellCoordinateFromMouseLocation(me.getPoint());
+        if(p != null) {
+            if(me.getWheelRotation() < 0) {
+                board.getCell(p).groupID++;
+            }
+            else if(board.getCell(p).groupID > 0) {
+                board.getCell(p).groupID--;
+            }
             repaint();
         }
     }
@@ -83,14 +126,19 @@ public class Display extends JComponent
     
     @Override
     public void mouseExited(MouseEvent me) {
+        // setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
+    
     @Override
     public void mouseEntered(MouseEvent me) {
+        setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
+    
     @Override
     public void mouseReleased(MouseEvent me) {
         strokeButton = -1;
     }
+    
     @Override
     public void mouseClicked(MouseEvent me) {
     }
@@ -148,7 +196,6 @@ public class Display extends JComponent
                     g.fillRect(topLeftX, topLeftY, getCellDisplayWidthOffset(), getCellDisplayWidthOffset());
                 }
                 
-                // if(Color.RGBtoHSB(cellColor.getRed(), cellColor.getGreen(), cellColor.getBlue(), null)[2] < 0.5) {
                 if(curCell.isDark() && curCell.isActive) {
                     g.setColor(Color.WHITE);
                 }
@@ -157,7 +204,9 @@ public class Display extends JComponent
                 }
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.drawString(
-                    curCell.groupID + "",
+                    curCell.groupID == GROUP_ID_SETTING
+                        ? "--"
+                        : curCell.groupID + "",
                     topLeftX + 3 * borderSize / 2,
                     topLeftY + getCellDisplayWidthOffset() - borderSize / 2
                 ); 
@@ -229,11 +278,11 @@ public class Display extends JComponent
             }
         }
     }
-
+    
     public static void main(String[] args) {
         System.setProperty("sun.java2d.uiScale", "1.0");
-        JFrame testFrame = new JFrame();
-        testFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
         JPanel displayPanel = new JPanel(new FlowLayout());
         displayPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -271,7 +320,7 @@ public class Display extends JComponent
         buttonsPanel.add(resetButton);
         buttonsPanel.add(randomButton);
         buttonsPanel.add(densityLabel);
-        buttonsPanel.add(densityField);
+        // buttonsPanel.add(densityField);
         buttonsPanel.add(dev1);
         
         dev1.addActionListener(new ActionListener() {
@@ -315,10 +364,10 @@ public class Display extends JComponent
             }
         });
         
-        testFrame.getContentPane().add(displayPanel, BorderLayout.CENTER);
-        testFrame.getContentPane().add(buttonsPanel, BorderLayout.SOUTH);
+        frame.getContentPane().add(displayPanel, BorderLayout.CENTER);
+        frame.getContentPane().add(buttonsPanel, BorderLayout.SOUTH);
         
-        testFrame.pack();
-        testFrame.setVisible(true);
+        frame.pack();
+        frame.setVisible(true);
     }
 }
