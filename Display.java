@@ -5,41 +5,83 @@ import java.awt.*;
 // import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
 
 import java.util.LinkedList;
+import java.util.Set;
+import java.util.HashSet;
 
 import javax.swing.*;
 import javax.swing.border.*;
 
 import GameOfLifeDerivatives.*;
 
-public class Display extends JComponent {
+public class Display extends JComponent
+                     implements MouseListener, MouseMotionListener {
     private Board board;
     private int cellDisplayWidth = 30;
     private int borderSize = 4;
+    private Set<Point> stroke = new HashSet<Point>();
+    int strokeButton = -1;
     
     public Display(Board b) {
         board = b;
-        addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent me) {
-                Point p = getCellCoordinateFromMouseLocation(me.getPoint());
-                if(p != null) {
-                    System.out.println("Clicked on cell " + p.x + ", " + p.y);
-                    switch(me.getButton()) {
-                        case MouseEvent.BUTTON1:
-                            System.out.println("Toggling value!");
-                            board.getCell(p).toggle();
-                            break;
-                        case MouseEvent.BUTTON3:
-                            System.out.println("Incrementing group ID!");
-                            board.getCell(p).groupID++;
-                            break;
-                    }
-                    repaint();
-                }
+        addMouseListener(this);
+        addMouseMotionListener(this);
+    }
+    
+    public void toggleFromMouseLocation(MouseEvent me) {
+        Point p = getCellCoordinateFromMouseLocation(me.getPoint());
+        if(p != null && !stroke.contains(p)) {
+            switch(strokeButton) {
+                case MouseEvent.BUTTON1:
+                    System.out.println("Toggling value!");
+                    board.getCell(p).toggle();
+                    break;
+                case MouseEvent.BUTTON3:
+                    System.out.println("Incrementing group ID!");
+                    board.getCell(p).groupID++;
+                    break;
+                default:
+                    return;
             }
-        });
+            System.out.println("Entered cell " + p.x + ", " + p.y);
+            stroke.add(p);
+            repaint();
+        }
+    }
+    
+    @Override
+    public void mousePressed(MouseEvent me) {
+        stroke.clear();
+        strokeButton = me.getButton();
+        toggleFromMouseLocation(me);
+    }
+    
+    @Override
+    public void mouseMoved(MouseEvent me) {
+        toggleFromMouseLocation(me);
+    }
+    
+    @Override
+    public void mouseDragged(MouseEvent me) {
+        toggleFromMouseLocation(me);
+    }
+    
+    @Override
+    public void mouseExited(MouseEvent me) {
+    }
+    @Override
+    public void mouseEntered(MouseEvent me) {
+    }
+    @Override
+    public void mouseReleased(MouseEvent me) {
+        strokeButton = -1;
+    }
+    @Override
+    public void mouseClicked(MouseEvent me) {
     }
     
     public Point getCellCoordinateFromMouseLocation(int cx, int cy) {
@@ -142,7 +184,7 @@ public class Display extends JComponent {
                 }
             }
         }
-                
+        
         // edge case: bottom right border
         if(board.hasBorderAt(-1, -1, Board.Direction.RIGHT) && !board.hasBorderAt(-1, -1, Board.Direction.DOWN)) {
             // redraw border
