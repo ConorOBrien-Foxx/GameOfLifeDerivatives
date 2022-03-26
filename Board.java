@@ -36,9 +36,22 @@ public class Board {
             // populate the columns in each row
             for (int j=0; j<width; j++){
                 Cell aCell = grid.get(i).get(j);
+                aCell.setX(i);
+                aCell.setY(j);
                 row.add(aCell);
             }
             board.add(row);
+        }
+    }
+    
+    public void debugCoordinates() {
+        for(int i = 0; i < board.getWidth(); i++) {
+            for(int j = 0; j < board.getHeight(); j++) {
+                System.out.print(
+                    board.getCell(i, j).getX() + "," + board.getCell(i, j).getY() + " "
+                );
+            }
+            System.out.println();
         }
     }
     
