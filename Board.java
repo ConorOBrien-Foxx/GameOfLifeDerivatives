@@ -5,10 +5,12 @@ import java.awt.Point;
 import GameOfLifeDerivatives.*;
 
 public class Board {
+    // direction matters for walls, and determining when they exist
     public enum Direction {
         UP, DOWN, LEFT, RIGHT
     }
 
+    // the board upon which the magic is done
     public ArrayList<ArrayList<Cell>> board;
 
     // height and width remain constant and are private
@@ -55,6 +57,24 @@ public class Board {
             }
             board.add(row);
         }
+    }
+
+    // creates and returns an empty board object
+    public ArrayList<ArrayList<Cell>> createEmptyBoard() {
+        ArrayList<ArrayList<Cell>> temp = new ArrayList<ArrayList<Cell>>();
+        
+        // populate the rows
+        for (int i=0; i<height; i++){
+            ArrayList<Cell> row = new ArrayList<Cell>();
+            // populate the columns in each row
+            for (int j=0; j<width; j++){
+                Cell aCell = new Cell(i,j);
+                row.add(aCell);
+            }
+            temp.add(row);
+        }
+
+        return temp;
     }
     
     public int getWidth() { return width; }
@@ -154,12 +174,17 @@ public class Board {
 
     // removes neighbors belonging to the same group
     public ArrayList<Cell> removeDuplicates(ArrayList<Cell> neighbors){
+        // gather all of the elements and their numbers
+        // make a new empty list
         ArrayList<Integer> neighborIDs = new ArrayList<Integer>();
         ArrayList<Cell> newNeighbors = new ArrayList<Cell>();
+        // add things to the empty list as they go along
         for (int i=0; i<neighbors.size(); i++){
             Cell thisOne = neighbors.get(i);
             Integer thisID = thisOne.groupID;
+            // if it's a zero it's added no matter what
             if (thisID == 0){ newNeighbors.add(thisOne); }
+            // if not, check that it wasn't included already 
             else if (neighborIDs.contains(thisID)){
                 newNeighbors.add(thisOne);
                 neighborIDs.add(thisID);
@@ -169,7 +194,7 @@ public class Board {
     }
 
     // check the proportion of neighbors that are active
-    public float checkProportionOfNeighbors(int x, int y){
+    public float checkProportion(int x, int y){
         // keep track of the cell
         Cell thisCell = getCell(x, y);
         ArrayList<Cell> neighbors = new ArrayList<Cell>();
@@ -189,5 +214,53 @@ public class Board {
 
         // return the proportion
         return ((float)numberActive / (float)neighbors.size());
+    }
+
+    // steps with no entropy 
+    public void step(){
+        // create an empty board
+        ArrayList<ArrayList<Cell>> temp = createEmptyBoard();
+
+        // iterate through the rows
+        for (int i=0; i<height; i++){
+            // grab a row
+            ArrayList<Cell> thisRow = temp.get(i);
+            // iterate through its elements
+            for (int j=0; j<width; j++){
+                // gather information on current state
+                Cell analogousCell = getCell(j, i);
+                boolean wasAlive = analogousCell.isActive;
+                boolean willBeAlive;
+                float proportion = checkProportion(j, i); 
+                
+                /**
+                 * if alive:
+                 * less than 17%, 1.5/9, dies
+                 * between 17%, 1.5/9, and 39%, 3.5/9, remains alive
+                 * greater than 39%, 3.5/9, dies
+                 */
+                if (wasAlive){
+                    if (0.39 > proportion && proportion >= 0.17){ willBeAlive = true; }
+                    else{ willBeAlive = false; }
+                }
+                /**
+                 * if dead:
+                 * less than 28%, 2.5/9, remains dead
+                 * between 28%, 2.5/9, and 39%, 3.5/9, becomes alive
+                 * greater than 39%, 3.5/9, remains dead
+                 */
+                else{
+                    if (0.39 > proportion && proportion >= 0.28){ willBeAlive = true; }
+                    else{ willBeAlive = false; }
+                }
+                
+                // grab the new cell and set it accordingly
+                Cell thisCell = thisRow.get(j);
+                thisCell.isActive = willBeAlive;
+            }
+        }
+
+        // replace the board!
+        board = temp; 
     }
 }
