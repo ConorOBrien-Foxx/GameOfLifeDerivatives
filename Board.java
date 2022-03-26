@@ -26,6 +26,10 @@ public class Board {
         reset();
     }
     
+    public void step() {
+        System.out.println("Unimplemented");
+    }
+    
     public Board(ArrayList<ArrayList<Cell>> grid) {
         board = new ArrayList<ArrayList<Cell>>();
         // populate the rows

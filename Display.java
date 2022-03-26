@@ -46,6 +46,11 @@ public class Display extends JComponent
         addMouseWheelListener(this);
     }
     
+    public void step() {
+        board.step();
+        repaint();
+    }
+    
     public void reset() {
         board.reset();
         repaint();
@@ -280,6 +285,7 @@ public class Display extends JComponent
         }
     }
     
+    static int stepDelay = 100;
     public static void main(String[] args) {
         System.setProperty("sun.java2d.uiScale", "1.0");
         frame = new JFrame();
@@ -302,7 +308,7 @@ public class Display extends JComponent
             board = parser.makeBoard();
         }
         else {
-            board = new Board();
+            board = new SandpileBoard();
         }
         
         final Display comp = new Display(board);
@@ -344,17 +350,41 @@ public class Display extends JComponent
             }
         });
         runStopButton.addActionListener(new ActionListener() {
+            class RunThread extends Thread {
+                public void run() {
+                    while(running) {
+                        // System.out.println("Step");
+                        comp.step();
+                        try {
+                            Thread.sleep(stepDelay);
+                        }
+                        catch(InterruptedException ex) {
+                            break;
+                        }
+                    }
+                }
+            }
+            
             private boolean running = false;
+            RunThread thread = null;
             @Override
             public void actionPerformed(ActionEvent e) {
                 runStopButton.setText(running ? "Run" : "Stop");
                 running = !running;
+                
+                if(running) {
+                    thread = new RunThread();
+                    thread.start();
+                }
+                else {
+                    thread = null;
+                }
             }
         });
         nextGenerationButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("TODO: advance the generation");
+                comp.step();
             }
         });
         resetButton.addActionListener(new ActionListener() {
