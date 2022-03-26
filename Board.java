@@ -8,8 +8,8 @@ public class Board{
     public ArrayList<ArrayList<Cell>> board;
 
     // height and width remain constant and are private
-    private static int height;
-    private static int width;
+    private int height;
+    private int width;
 
     public Board(){
         this(15, 15);
@@ -37,10 +37,7 @@ public class Board{
     
     public int getWidth() { return width; }
     public int getHeight() { return height; }
-    public Cell getCell(int x, int y) {
-        return board.get(y).get(x);
-        // return board.get(y).get(x);
-    }
+    public Cell getCell(int x, int y) { return board.get(y).get(x); }
 
     public int checkNeighbors(int w, int h){
         // gather the rows

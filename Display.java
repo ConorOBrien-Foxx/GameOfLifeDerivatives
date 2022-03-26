@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
@@ -12,23 +13,48 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.border.*;
 
 import GameOfLifeDerivatives.*;
 
 public class Display extends JComponent {
-    private static Board board;
+    private Board board;
+    private int cellDisplayWidth = 30;
+    private int borderSize = 3;
+    
     public Display(Board b) {
         board = b;
     }
     
+    public int getFrameWidth() {
+        return getCellDisplayWidthOffset() * board.getWidth();
+    }
+    public int getFrameHeight() {
+        return getCellDisplayWidthOffset() * board.getHeight();
+    }
+    
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(getFrameWidth(), getFrameHeight());
+    }
+    
+    public int getCellDisplayWidthOffset() {
+        return cellDisplayWidth + borderSize;
+    }
+    
     @Override
     protected void paintComponent(Graphics g) {
-        int width = 10;
         g.setColor(Color.RED);
         for(int i = 0; i < board.getWidth(); i++) {
             for(int j = 0; j < board.getHeight(); j++) {
                 if(board.getCell(i, j).isActive) {
-                    g.fillRect(10 + j * (width+1), 10 + i * (width+1), width, width);
+                    g.fillRect(
+                        j * getCellDisplayWidthOffset(),
+                        i * getCellDisplayWidthOffset(),
+                        cellDisplayWidth,
+                        cellDisplayWidth
+                    );
                 }
             }
         }
@@ -38,9 +64,15 @@ public class Display extends JComponent {
         System.setProperty("sun.java2d.uiScale", "1.0");
         JFrame testFrame = new JFrame();
         testFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        
+        JPanel displayPanel = new JPanel(new FlowLayout());
+        displayPanel.setBorder(new EmptyBorder(30, 30, 30, 30));
+        
         final Display comp = new Display(new Board());
-        comp.setPreferredSize(new Dimension(256, 256));
-        testFrame.getContentPane().add(comp, BorderLayout.CENTER);
+        displayPanel.add(comp);
+        
+        testFrame.getContentPane().add(displayPanel, BorderLayout.CENTER);
+        
         testFrame.pack();
         testFrame.setVisible(true);
     }
