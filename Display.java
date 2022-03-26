@@ -65,15 +65,16 @@ public class Display extends JComponent
             Cell cell = board.getCell(p);
             if(strokeButton == MouseEvent.BUTTON1) {
                 if((me.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) == InputEvent.CTRL_DOWN_MASK) {
+                    int previousID = cell.groupID;
+                    strokeButton = -1;
                     cell.groupID = GROUP_ID_SETTING;
                     repaint();
-                    String gidString = JOptionPane.showInputDialog(frame, "Please enter a group ID:", null);
-                    strokeButton = -1;
+                    String gidString = JOptionPane.showInputDialog(frame, "Please enter a Group ID:", previousID + "");
                     try {
                         cell.groupID = Integer.parseInt(gidString);
                     }
                     catch(NumberFormatException ex) {
-                        cell.groupID = 0;
+                        cell.groupID = previousID;
                     }
                     repaint();
                     return;
@@ -308,6 +309,7 @@ public class Display extends JComponent
         displayPanel.add(comp);
         
         JPanel buttonsPanel = new JPanel();
+        JButton helpButton = new JButton("Help");
         JButton nextGenerationButton = new JButton("Next Generation");
         JButton runStopButton = new JButton("Run");
         JButton resetButton = new JButton("Reset");
@@ -315,14 +317,14 @@ public class Display extends JComponent
         JLabel densityLabel = new JLabel("Seed Density:");
         JTextField densityField = new JTextField("0.5", 3);
         JButton dev1 = new JButton("[DEV] Group ID Sample");
+        buttonsPanel.add(helpButton);
         buttonsPanel.add(nextGenerationButton);
         buttonsPanel.add(runStopButton);
         buttonsPanel.add(resetButton);
         buttonsPanel.add(randomButton);
         buttonsPanel.add(densityLabel);
-        // buttonsPanel.add(densityField);
+        buttonsPanel.add(densityField);
         buttonsPanel.add(dev1);
-        
         dev1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -333,6 +335,12 @@ public class Display extends JComponent
                         comp.repaint();
                     }
                 }
+            }
+        });
+        helpButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(frame, "Left Click to toggle a cell's alive state\nRight Click to increment a cell's Group ID\nMouse Wheel Up/Down to increase/decrease a cell's Group ID by 1\n", "Controls", JOptionPane.INFORMATION_MESSAGE);
             }
         });
         runStopButton.addActionListener(new ActionListener() {
