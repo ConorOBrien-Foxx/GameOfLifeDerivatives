@@ -1,13 +1,13 @@
 package GameOfLifeDerivatives;
 
-public class Cell{
+public class Cell {
     
     public boolean isActive;
     public int[] entropies;
     public int groupID;
 
     // initializes to default values
-    public Cell(){
+    public Cell() {
         // alive by default
         isActive = true;
         // up, down, left, right
@@ -21,7 +21,7 @@ public class Cell{
     }
 
     // reduces the entropy of each item in the array
-    public void reduceEntropy(){
+    public void reduceEntropy() {
         for (int i=0; i<3; i++){
             entropies[i] = entropies[i] - 1;
         }

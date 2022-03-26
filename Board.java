@@ -5,6 +5,9 @@ import java.awt.Point;
 import GameOfLifeDerivatives.*;
 
 public class Board {
+    public enum Direction {
+        UP, DOWN, LEFT, RIGHT
+    }
 
     public ArrayList<ArrayList<Cell>> board;
 
@@ -38,16 +41,29 @@ public class Board {
     
     public int getWidth() { return width; }
     public int getHeight() { return height; }
-    public Cell getCell(int x, int y) { return board.get(y).get(x); }
+    public Cell getCell(int x, int y) {
+        if(y < 0)       y = height - (height - y) % height;
+        if(y >= height) y %= height;
+        if(x < 0)       x = width - (width -x ) % width;
+        if(x >= width)  x %= width;
+        return board.get(y).get(x);
+    }
     public Cell getCell(Point p) { return getCell(p.x, p.y); }
     
-    public void toggleCell(int x, int y) {
-        board.get(y).get(x).toggle();
+    public boolean hasBorderAt(int x, int y, Direction d) {
+        int bx, by;
+        switch(d) {
+            case UP:    bx = x; by = y - 1; break;
+            case DOWN:  bx = x; by = y + 1; break;
+            case LEFT:  bx = x - 1; by = y; break;
+            case RIGHT: bx = x + 1; by = y; break;
+            default:    return false;
+        }
+        Cell target = getCell(x, y);
+        Cell toCheck = getCell(bx, by);
+        return target.groupID == 0 || target.groupID != toCheck.groupID;
     }
-    public void toggleCell(Point p) {
-        toggleCell(p.x, p.y);
-    }
-
+    
     public int checkNeighbors(int w, int h){
         // gather the rows
         ArrayList<Cell> rowAbove = board.get((h-1+height) % height);
