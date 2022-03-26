@@ -241,6 +241,9 @@ public class Board {
         return ((float)numberActive / (float)neighbors.size());
     }
 
+    // increases entropy of surroudning elements
+
+
     // steps with no entropy 
     public void step(){
         // create an empty board
@@ -253,10 +256,9 @@ public class Board {
             // iterate through its elements
             for (int j=0; j<width; j++){
                 // gather information on current state
-                Cell analogousCell = getCell(j, i);
-                boolean wasAlive = analogousCell.isActive;
                 boolean willBeAlive;
                 float proportion = checkProportion(j, i); 
+                Cell newCell = new Cell(getCell(j, i));
                 
                 /**
                  * if alive:
@@ -264,7 +266,7 @@ public class Board {
                  * between 17%, 1.5/9, and 39%, 3.5/9, remains alive
                  * greater than 39%, 3.5/9, dies
                  */
-                if (wasAlive){
+                if (newCell.isActive){
                     if (0.39 > proportion && proportion >= 0.17){ willBeAlive = true; }
                     else{ willBeAlive = false; }
                 }
@@ -280,8 +282,8 @@ public class Board {
                 }
                 
                 // grab the new cell and set it accordingly
-                Cell thisCell = thisRow.get(j);
-                thisCell.isActive = willBeAlive;
+                newCell.isActive = willBeAlive;
+                thisRow.set(j,newCell);
             }
         }
 
