@@ -45,10 +45,10 @@ public class Board {
     }
     
     public void debugCoordinates() {
-        for(int i = 0; i < board.getWidth(); i++) {
-            for(int j = 0; j < board.getHeight(); j++) {
+        for(int i = 0; i < getWidth(); i++) {
+            for(int j = 0; j < getHeight(); j++) {
                 System.out.print(
-                    board.getCell(i, j).getX() + "," + board.getCell(i, j).getY() + " "
+                    getCell(i, j).getX() + "," + getCell(i, j).getY() + " "
                 );
             }
             System.out.println();
