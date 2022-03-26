@@ -11,6 +11,8 @@ public class Board {
 
     public ArrayList<ArrayList<Cell>> board;
 
+    public boolean running = true;
+
     // height and width remain constant and are private
     private int height;
     private int width;
@@ -24,10 +26,6 @@ public class Board {
         width = w;
         
         reset();
-    }
-    
-    public void step() {
-        System.out.println("Unimplemented");
     }
     
     public Board(ArrayList<ArrayList<Cell>> grid) {
@@ -48,11 +46,13 @@ public class Board {
         }
     }
     
+    public void step() {}
+    
     public void debugCoordinates() {
-        for(int i = 0; i < board.getWidth(); i++) {
-            for(int j = 0; j < board.getHeight(); j++) {
+        for(int i = 0; i < width; i++) {
+            for(int j = 0; j < height; j++) {
                 System.out.print(
-                    board.getCell(i, j).getX() + "," + board.getCell(i, j).getY() + " "
+                    getCell(i, j).getX() + "," + getCell(i, j).getY() + " "
                 );
             }
             System.out.println();

@@ -8,6 +8,7 @@ public class SandpileBoard extends Board {
     public static final int SANDPILE_OVERFLOW = 4;
     @Override
     public void step() {
+        running = true;
         ArrayList<Point> toppleCandidates = new ArrayList<>();
         for(int i = 0; i < getHeight(); i++) {
             for(int j = 0; j < getWidth(); j++) {
@@ -19,6 +20,7 @@ public class SandpileBoard extends Board {
         
         if(toppleCandidates.size() == 0) {
             // stable configuration
+            running = false;
             return;
         }
         

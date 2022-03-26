@@ -355,6 +355,11 @@ public class Display extends JComponent
                     while(running) {
                         // System.out.println("Step");
                         comp.step();
+                        if(!comp.board.running) {
+                            // stop running
+                            actionPerformed(null);
+                            break;
+                        }
                         try {
                             Thread.sleep(stepDelay);
                         }
