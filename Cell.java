@@ -94,4 +94,12 @@ public class Cell {
     public int getY(){
         return yLoc;
     }
+
+    public void setX(int x){
+        xLoc = x;
+    }
+
+    public void setY(int y){
+        yLoc = y;
+    }
 }

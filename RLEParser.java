@@ -18,15 +18,17 @@ public class RLEParser {
     private boolean goldMode = false;
     private int repeatCount = 1;
     private int maxWidth = 0;
+    private Cell buildCell = new Cell(0, 0);
     
     public RLEParser() {
         
     }
     
     public void padGrid() {
-        for(ArrayList<Cell> row : buildGrid) {
+        for(int i = 0; i < buildGrid.size(); i++) {
+            ArrayList<Cell> row = buildGrid.get(i);
             while(row.size() < maxWidth) {
-                row.add(new Cell(false));
+                row.add(new Cell(false, row.size(), i));
             }
         }
     }
@@ -79,7 +81,6 @@ public class RLEParser {
             }
         }
         else {
-            Cell buildCell = new Cell();
             char lastCur = 0;
             for(int i = 0; i < line.length(); i++) {
                 char cur = line.charAt(i);
