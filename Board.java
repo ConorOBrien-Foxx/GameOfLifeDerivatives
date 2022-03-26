@@ -224,7 +224,7 @@ public class Board {
         int numberActive = 0;
         for (int i=0; i<neighbors.size(); i++){
             Cell thisOne = neighbors.get(i);
-            if (thisCell.isActive) { numberActive++; }
+            if (thisOne.isActive) { numberActive++; }
         }
 
         // return the proportion
@@ -272,6 +272,7 @@ public class Board {
                 // grab the new cell and set it accordingly
                 Cell thisCell = thisRow.get(j);
                 thisCell.isActive = willBeAlive;
+                System.out.println(i + "," + j + " - " + thisCell.isActive + " - " + proportion);
             }
         }
 

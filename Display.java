@@ -312,7 +312,7 @@ public class Display extends JComponent
             board = parser.makeBoard();
         }
         else {
-            board = new SandpileBoard();
+            board = new Board();
         }
         
         final Display comp = new Display(board);
