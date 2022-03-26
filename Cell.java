@@ -15,13 +15,13 @@ public class Cell {
     // initializes to default values
     public Cell() {
         // alive by default
-        this(true,-1,-1);
+        this(false,-1,-1);
     }
     
     // initializes to default values
     public Cell(int x,int y) {
         // alive by default
-        this(true,x,y);
+        this(false,x,y);
     }
 
     // initializes to default values

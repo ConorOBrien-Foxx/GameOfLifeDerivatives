@@ -272,7 +272,6 @@ public class Board {
                 // grab the new cell and set it accordingly
                 Cell thisCell = thisRow.get(j);
                 thisCell.isActive = willBeAlive;
-                System.out.println(i + "," + j + " - " + thisCell.isActive + " - " + proportion);
             }
         }
 
