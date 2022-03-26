@@ -176,11 +176,21 @@ public class Board {
         Cell left = getCell(x-1, y);
         Cell right = getCell(x+1, y);
 
+        Cell upLeft = getCell(x-1, y-1);
+        Cell downLeft = getCell(x-1, y+1);
+        Cell upRight = getCell(x+1, y-1);
+        Cell downRight = getCell(x+1, y+1);
+
         // add neightbors when you can
         if (up.groupID != thisGroupID || thisGroupID == 0) { neighbors.add(up); } 
         if (down.groupID != thisGroupID || thisGroupID == 0) { neighbors.add(down); } 
         if (left.groupID != thisGroupID || thisGroupID == 0) { neighbors.add(left); } 
         if (right.groupID != thisGroupID || thisGroupID == 0) { neighbors.add(right); } 
+
+        if (upLeft.groupID != thisGroupID || thisGroupID == 0) { neighbors.add(upLeft); } 
+        if (downLeft.groupID != thisGroupID || thisGroupID == 0) { neighbors.add(downLeft); } 
+        if (upRight.groupID != thisGroupID || thisGroupID == 0) { neighbors.add(upRight); } 
+        if (downRight.groupID != thisGroupID || thisGroupID == 0) { neighbors.add(downRight); } 
 
         // remove dupes and return
         neighbors = removeDuplicates(neighbors);
