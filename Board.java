@@ -22,7 +22,11 @@ public class Board {
     public Board(int w, int h) {
         height = h;
         width = w;
-
+        
+        reset();
+    }
+    
+    public void reset() {
         ArrayList<ArrayList<Cell>> board = new ArrayList<ArrayList<Cell>>();
         
         // populate the rows
@@ -41,6 +45,7 @@ public class Board {
     
     public int getWidth() { return width; }
     public int getHeight() { return height; }
+    
     public Cell getCell(int x, int y) {
         if(y < 0)       y = height - (height - y) % height;
         if(y >= height) y %= height;

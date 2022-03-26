@@ -1,8 +1,8 @@
 package GameOfLifeDerivatives;
 
 import java.awt.*;
-// import java.awt.event.ActionEvent;
-// import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -33,6 +33,11 @@ public class Display extends JComponent
         addMouseMotionListener(this);
     }
     
+    public void reset() {
+        board.reset();
+        repaint();
+    }
+    
     public void toggleFromMouseLocation(MouseEvent me) {
         Point p = getCellCoordinateFromMouseLocation(me.getPoint());
         if(p != null && !stroke.contains(p)) {
@@ -56,6 +61,7 @@ public class Display extends JComponent
     
     @Override
     public void mousePressed(MouseEvent me) {
+        System.out.println("--- NEW STROKE ---");
         stroke.clear();
         strokeButton = me.getButton();
         toggleFromMouseLocation(me);
@@ -86,15 +92,11 @@ public class Display extends JComponent
     }
     
     public Point getCellCoordinateFromMouseLocation(int cx, int cy) {
-        // int clickOffsetX = cx % getCellDisplayWidthOffset();
-        // int clickOffsetY = cy % getCellDisplayWidthOffset();
-        
-        // if(clickOffsetX >= cellDisplayWidth || clickOffsetY >= cellDisplayWidth) {
-            // return null;
-        // }
-        
         int ix = cx / getCellDisplayWidthOffset();
         int iy = cy / getCellDisplayWidthOffset();
+        if(ix < 0 || iy < 0 || ix >= board.getWidth() || iy >= board.getHeight()) {
+            return null;
+        }
         return new Point(ix, iy);
     }
     public Point getCellCoordinateFromMouseLocation(Point p) {
@@ -215,7 +217,27 @@ public class Display extends JComponent
         final Display comp = new Display(new Board(10, 15));
         displayPanel.add(comp);
         
+        JPanel buttonsPanel = new JPanel();
+        JButton nextGenerationButton = new JButton("Next Generation");
+        JButton resetButton = new JButton("Reset");
+        buttonsPanel.add(nextGenerationButton);
+        buttonsPanel.add(resetButton);
+        
+        nextGenerationButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("TODO: advance the generation");
+            }
+        });
+        resetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                comp.reset();
+            }
+        });
+        
         testFrame.getContentPane().add(displayPanel, BorderLayout.CENTER);
+        testFrame.getContentPane().add(buttonsPanel, BorderLayout.SOUTH);
         
         testFrame.pack();
         testFrame.setVisible(true);
@@ -235,18 +257,6 @@ public class Display extends JComponent
         buttonsPanel.add(newLineButton);
         buttonsPanel.add(clearButton);
         testFrame.getContentPane().add(buttonsPanel, BorderLayout.SOUTH);
-        newLineButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int x1 = (int) (Math.random()*320);
-                int x2 = (int) (Math.random()*320);
-                int y1 = (int) (Math.random()*200);
-                int y2 = (int) (Math.random()*200);
-                Color randomColor = new Color((float)Math.random(), (float)Math.random(), (float)Math.random());
-                comp.addLine(x1, y1, x2, y2, randomColor);
-            }
-        });
         clearButton.addActionListener(new ActionListener() {
 
             @Override
