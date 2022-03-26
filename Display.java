@@ -96,9 +96,12 @@ public class Display extends JComponent
     }
     
     public Point getCellCoordinateFromMouseLocation(int cx, int cy) {
+        if(cx < 0 || cy < 0) {
+            return null;
+        }
         int ix = cx / getCellDisplayWidthOffset();
         int iy = cy / getCellDisplayWidthOffset();
-        if(ix < 0 || iy < 0 || ix >= board.getWidth() || iy >= board.getHeight()) {
+        if(ix >= board.getWidth() || iy >= board.getHeight()) {
             return null;
         }
         return new Point(ix, iy);
@@ -257,12 +260,14 @@ public class Display extends JComponent
         
         JPanel buttonsPanel = new JPanel();
         JButton nextGenerationButton = new JButton("Next Generation");
+        JButton runStopButton = new JButton("Run");
         JButton resetButton = new JButton("Reset");
         JButton randomButton = new JButton("Random Seed");
         JLabel densityLabel = new JLabel("Seed Density:");
         JTextField densityField = new JTextField("0.5", 3);
         JButton dev1 = new JButton("[DEV] Group ID Sample");
         buttonsPanel.add(nextGenerationButton);
+        buttonsPanel.add(runStopButton);
         buttonsPanel.add(resetButton);
         buttonsPanel.add(randomButton);
         buttonsPanel.add(densityLabel);
@@ -279,6 +284,14 @@ public class Display extends JComponent
                         comp.repaint();
                     }
                 }
+            }
+        });
+        runStopButton.addActionListener(new ActionListener() {
+            private boolean running = false;
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                runStopButton.setText(running ? "Run" : "Stop");
+                running = !running;
             }
         });
         nextGenerationButton.addActionListener(new ActionListener() {
