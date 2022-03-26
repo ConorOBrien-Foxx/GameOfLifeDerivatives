@@ -22,7 +22,7 @@ import GameOfLifeDerivatives.*;
 public class Display extends JComponent
                      implements MouseListener, MouseMotionListener {
     private Board board;
-    private int cellDisplayWidth = 50;
+    private int cellDisplayWidth = 26;
     private int borderSize = 4;
     private Set<Point> stroke = new HashSet<Point>();
     int strokeButton = -1;
@@ -43,6 +43,14 @@ public class Display extends JComponent
     public void reset() {
         board.reset();
         repaint();
+    }
+    
+    public void randomize(float density) {
+        for(int i = 0; i < board.getWidth(); i++) {
+            for(int j = 0; j < board.getHeight(); j++) {
+                if(Math.random() > density) board.getCell(i, j).toggle();
+            }
+        }
     }
     
     public void toggleFromMouseLocation(MouseEvent me) {
@@ -149,7 +157,7 @@ public class Display extends JComponent
                 }
                 
                 // if(Color.RGBtoHSB(cellColor.getRed(), cellColor.getGreen(), cellColor.getBlue(), null)[2] < 0.5) {
-                if(curCell.isDark()) {
+                if(curCell.isDark() && curCell.isActive) {
                     g.setColor(Color.WHITE);
                 }
                 else {
@@ -236,16 +244,22 @@ public class Display extends JComponent
         testFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
         JPanel displayPanel = new JPanel(new FlowLayout());
-        displayPanel.setBorder(new EmptyBorder(30, 30, 30, 30));
+        displayPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         
-        final Display comp = new Display(new Board(10, 15));
+        final Display comp = new Display(new Board(30, 30));
         displayPanel.add(comp);
         
         JPanel buttonsPanel = new JPanel();
         JButton nextGenerationButton = new JButton("Next Generation");
         JButton resetButton = new JButton("Reset");
+        JButton randomButton = new JButton("Random Seed");
+        JLabel densityLabel = new JLabel("Seed Density:");
+        JTextField densityField = new JTextField("0.5", 3);
         buttonsPanel.add(nextGenerationButton);
         buttonsPanel.add(resetButton);
+        buttonsPanel.add(randomButton);
+        buttonsPanel.add(densityLabel);
+        buttonsPanel.add(densityField);
         
         nextGenerationButton.addActionListener(new ActionListener() {
             @Override
@@ -257,6 +271,14 @@ public class Display extends JComponent
             @Override
             public void actionPerformed(ActionEvent e) {
                 comp.reset();
+            }
+        });
+        randomButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                comp.reset();
+                float f = Float.parseFloat(densityField.getText());
+                comp.randomize(f);
             }
         });
         

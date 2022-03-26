@@ -42,11 +42,6 @@ public class Cell {
         int gid = groupID % UNIQUE_COUNT;
         float hue = gid % UNIQUE_COUNT % STRATA_COUNT * 1.0f / STRATA_COUNT;
         float brightness = 1.0f - (gid * 1.0f / STRATA_COUNT / DIMINISH_TIMES);
-        // if(brightness <= 0) {
-            // System.out.println(brightness);
-            // brightness = 1 - (1 - brightness) % 1.0f;
-            // System.out.println(brightness);
-        // }
         /*
          * Options for saturation:
          * - brightness
