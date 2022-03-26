@@ -7,11 +7,15 @@ public class Cell {
     public boolean isActive;
     public int[] entropies;
     public int groupID;
-
+    
     // initializes to default values
     public Cell() {
         // alive by default
-        isActive = true;
+        this(true);
+    }
+
+    public Cell(boolean alive) {
+        isActive = alive;
         // up, down, left, right
         entropies = new int[4];
         entropies[0] = 0;
@@ -20,6 +24,15 @@ public class Cell {
         entropies[3] = 0;
         // default groupID is 0
         groupID = 0;
+    }
+    
+    public Cell(Cell x) {
+        isActive = x.isActive;
+        entropies = new int[4];
+        for(int i = 0; i < entropies.length; i++) {
+            entropies[i] = x.entropies[i];
+        }
+        groupID = x.groupID;
     }
 
     // reduces the entropy of each item in the array

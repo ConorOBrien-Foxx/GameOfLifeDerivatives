@@ -1,1 +1,1 @@
-java GameOfLifeDerivatives.Display
+java GameOfLifeDerivatives.Display %*

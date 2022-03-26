@@ -21,7 +21,7 @@ import GameOfLifeDerivatives.*;
 
 public class Display extends JComponent
                      implements MouseListener, MouseMotionListener {
-    private Board board;
+    protected Board board;
     private int cellDisplayWidth = 26;
     private int borderSize = 4;
     private Set<Point> stroke = new HashSet<Point>();
@@ -31,13 +31,6 @@ public class Display extends JComponent
         board = b;
         addMouseListener(this);
         addMouseMotionListener(this);
-        
-        int gid = 0;
-        for(int j = 0; j < Cell.DIMINISH_TIMES * 2; j++) {
-            for(int i = 0; i < Cell.STRATA_COUNT; i++) {
-                board.getCell(i, j).groupID = gid++;
-            }
-        }
     }
     
     public void reset() {
@@ -58,17 +51,14 @@ public class Display extends JComponent
         if(p != null && !stroke.contains(p)) {
             switch(strokeButton) {
                 case MouseEvent.BUTTON1:
-                    System.out.println("Toggling value!");
                     board.getCell(p).toggle();
                     break;
                 case MouseEvent.BUTTON3:
-                    System.out.println("Incrementing group ID!");
                     board.getCell(p).groupID++;
                     break;
                 default:
                     return;
             }
-            System.out.println("Entered cell " + p.x + ", " + p.y);
             stroke.add(p);
             repaint();
         }
@@ -76,7 +66,6 @@ public class Display extends JComponent
     
     @Override
     public void mousePressed(MouseEvent me) {
-        System.out.println("--- NEW STROKE ---");
         stroke.clear();
         strokeButton = me.getButton();
         toggleFromMouseLocation(me);
@@ -246,7 +235,24 @@ public class Display extends JComponent
         JPanel displayPanel = new JPanel(new FlowLayout());
         displayPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         
-        final Display comp = new Display(new Board(30, 30));
+        RLEParser parser;
+        Board board;
+        if(args.length > 0) {
+            parser = RLEParser.fromFile(args[0]);
+            if(parser == null) {
+                System.out.println("Could not read file " + args[0]);
+                return;
+            }
+            System.out.println("x    = " + parser.x);
+            System.out.println("y    = " + parser.y);
+            System.out.println("rule = " + parser.rule);
+            board = parser.makeBoard();
+        }
+        else {
+            board = new Board();
+        }
+        
+        final Display comp = new Display(board);
         displayPanel.add(comp);
         
         JPanel buttonsPanel = new JPanel();
@@ -255,12 +261,26 @@ public class Display extends JComponent
         JButton randomButton = new JButton("Random Seed");
         JLabel densityLabel = new JLabel("Seed Density:");
         JTextField densityField = new JTextField("0.5", 3);
+        JButton dev1 = new JButton("[DEV] Group ID Sample");
         buttonsPanel.add(nextGenerationButton);
         buttonsPanel.add(resetButton);
         buttonsPanel.add(randomButton);
         buttonsPanel.add(densityLabel);
         buttonsPanel.add(densityField);
+        buttonsPanel.add(dev1);
         
+        dev1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int gid = 0;
+                for(int j = 0; j < Cell.DIMINISH_TIMES * 2; j++) {
+                    for(int i = 0; i < Cell.STRATA_COUNT; i++) {
+                        comp.board.getCell(i, j).groupID = gid++;
+                        comp.repaint();
+                    }
+                }
+            }
+        });
         nextGenerationButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

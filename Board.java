@@ -26,8 +26,24 @@ public class Board {
         reset();
     }
     
+    public Board(ArrayList<ArrayList<Cell>> grid) {
+        board = new ArrayList<ArrayList<Cell>>();
+        // populate the rows
+        height = grid.size();
+        width = height == 0 ? 0 : grid.get(0).size();
+        for (int i=0; i<height; i++){
+            ArrayList<Cell> row = new ArrayList<Cell>();
+            // populate the columns in each row
+            for (int j=0; j<width; j++){
+                Cell aCell = grid.get(i).get(j);
+                row.add(aCell);
+            }
+            board.add(row);
+        }
+    }
+    
     public void reset() {
-        ArrayList<ArrayList<Cell>> board = new ArrayList<ArrayList<Cell>>();
+        board = new ArrayList<ArrayList<Cell>>();
         
         // populate the rows
         for (int i=0; i<height; i++){
@@ -39,8 +55,6 @@ public class Board {
             }
             board.add(row);
         }
-        
-        this.board = board;
     }
     
     public int getWidth() { return width; }
