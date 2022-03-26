@@ -9,24 +9,10 @@ public class Board{
 
     // height and width remain constant and are private
     private static int height;
-    private static int width; 
+    private static int width;
 
     public Board(){
-        height = 15;
-        width = 15;
-
-        ArrayList<ArrayList<Cell>> board = new ArrayList<ArrayList<Cell>>();
-        
-        // populate the rows
-        for (int i=0; i<height; i++){
-            ArrayList<Cell> row = new ArrayList<Cell>();
-            // populate the columns in each row
-            for (int j=0; j<width; j++){
-                Cell aCell = new Cell();
-                row.add(aCell);
-            }
-            board.add(row);
-        }
+        this(15, 15);
     }
 
     public Board(int w, int h){
@@ -45,6 +31,15 @@ public class Board{
             }
             board.add(row);
         }
+        
+        this.board = board;
+    }
+    
+    public int getWidth() { return width; }
+    public int getHeight() { return height; }
+    public Cell getCell(int x, int y) {
+        return board.get(y).get(x);
+        // return board.get(y).get(x);
     }
 
     public int checkNeighbors(int w, int h){

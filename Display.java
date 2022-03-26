@@ -13,34 +13,21 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import GameOfLifeDerivatives.*;
+
 public class Display extends JComponent {
+    private static Board board;
+    public Display(Board b) {
+        board = b;
+    }
     
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        int[][] grid = {
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-            { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        };
         int width = 10;
         g.setColor(Color.RED);
-        for(int i = 0; i < grid.length; i++) {
-            for(int j = 0; j < grid[i].length; j++) {
-                if(grid[i][j] == 1) {
+        for(int i = 0; i < board.getWidth(); i++) {
+            for(int j = 0; j < board.getHeight(); j++) {
+                if(board.getCell(i, j).isActive) {
                     g.fillRect(10 + j * (width+1), 10 + i * (width+1), width, width);
                 }
             }
@@ -51,7 +38,7 @@ public class Display extends JComponent {
         System.setProperty("sun.java2d.uiScale", "1.0");
         JFrame testFrame = new JFrame();
         testFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        final Display comp = new Display();
+        final Display comp = new Display(new Board());
         comp.setPreferredSize(new Dimension(256, 256));
         testFrame.getContentPane().add(comp, BorderLayout.CENTER);
         testFrame.pack();
