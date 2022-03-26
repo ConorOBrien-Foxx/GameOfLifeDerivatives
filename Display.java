@@ -133,7 +133,7 @@ public class Display extends JComponent
                 int topLeftX = i * getCellDisplayWidthOffset();
                 int topLeftY = j * getCellDisplayWidthOffset();
                 Cell curCell = board.getCell(i, j);
-                Color cellColor = curCell.groupID == 0 ? Color.RED : Color.GREEN;
+                Color cellColor = curCell.getColor();
                 if(curCell.isActive) {
                     g.setColor(cellColor);
                     g.fillRect(topLeftX, topLeftY, getCellDisplayWidthOffset(), getCellDisplayWidthOffset());
@@ -242,30 +242,4 @@ public class Display extends JComponent
         testFrame.pack();
         testFrame.setVisible(true);
     }
-    
-    /*
-    
-    
-        JFrame testFrame = new JFrame();
-        testFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        final Display comp = new Display();
-        comp.setPreferredSize(new Dimension(320, 200));
-        testFrame.getContentPane().add(comp, BorderLayout.CENTER);
-        JPanel buttonsPanel = new JPanel();
-        JButton newLineButton = new JButton("New Line");
-        JButton clearButton = new JButton("Clear");
-        buttonsPanel.add(newLineButton);
-        buttonsPanel.add(clearButton);
-        testFrame.getContentPane().add(buttonsPanel, BorderLayout.SOUTH);
-        clearButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                comp.clearLines();
-            }
-        });
-        testFrame.pack();
-        testFrame.setVisible(true);
-    
-    */
 }

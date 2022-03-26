@@ -1,5 +1,7 @@
 package GameOfLifeDerivatives;
 
+import java.awt.Color;
+
 public class Cell {
     
     public boolean isActive;
@@ -30,5 +32,22 @@ public class Cell {
     public void toggle() {
         isActive = !isActive;
     }
-
+    
+    private static Color[] ACTIVE_CELL_COLORS = {
+        Color.RED,
+        Color.ORANGE,
+        Color.YELLOW,
+        Color.GREEN,
+        Color.BLUE,
+        Color.CYAN,
+        Color.MAGENTA,
+    };
+    public Color getColor() {
+        if(groupID < ACTIVE_CELL_COLORS.length) {
+            return ACTIVE_CELL_COLORS[groupID];
+        }
+        else {
+            return Color.DARK_GRAY;
+        }
+    }
 }
