@@ -12,6 +12,7 @@ import java.awt.geom.Line2D;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -122,6 +123,9 @@ public class Display extends JComponent
         Graphics2D g2 = (Graphics2D) g;
         g2.setStroke(new BasicStroke(borderSize));
         Line2D.Float bottomRightRightBorder = null;
+        ArrayList<Line2D.Float> borders = new ArrayList<>();
+        ArrayList<Color> borderColors = new ArrayList<>();
+        
         for(int i = 0; i < board.getWidth(); i++) {
             for(int j = 0; j < board.getHeight(); j++) {
                 int topLeftX = i * getCellDisplayWidthOffset();
@@ -135,10 +139,10 @@ public class Display extends JComponent
                 
                 if(i + 1 == board.getWidth()) {
                     if(board.hasBorderAt(i, j, Board.Direction.RIGHT)) {
-                        g.setColor(Color.BLACK);
+                        borderColors.add(Color.BLACK);
                     }
                     else {
-                        g.setColor(cellColor);
+                        borderColors.add(cellColor);
                     }
                     // since we process j+1==board.getHeight() last, we guarantee this is correctly set
                     bottomRightRightBorder = new Line2D.Float(
@@ -147,16 +151,16 @@ public class Display extends JComponent
                         topLeftX + borderSize / 2 + getCellDisplayWidthOffset(),
                         topLeftY + borderSize / 2 + getCellDisplayWidthOffset()
                     );
-                    g2.draw(bottomRightRightBorder);
+                    borders.add(bottomRightRightBorder);
                 }
                 if(j + 1 == board.getHeight()) {
                     if(board.hasBorderAt(i, j, Board.Direction.DOWN)) {
-                        g.setColor(Color.BLACK);
+                        borderColors.add(Color.BLACK);
                     }
                     else {
-                        g.setColor(cellColor);
+                        borderColors.add(cellColor);
                     }
-                    g2.draw(new Line2D.Float(
+                    borders.add(new Line2D.Float(
                         topLeftX + borderSize / 2,
                         topLeftY + borderSize / 2 + getCellDisplayWidthOffset(),
                         topLeftX + borderSize / 2 +     getCellDisplayWidthOffset(),
@@ -165,8 +169,8 @@ public class Display extends JComponent
                 }
                 
                 if(board.hasBorderAt(i, j, Board.Direction.UP)) {
-                    g.setColor(Color.BLACK);
-                    g2.draw(new Line2D.Float(
+                    borderColors.add(Color.BLACK);
+                    borders.add(new Line2D.Float(
                         topLeftX + borderSize / 2,
                         topLeftY + borderSize / 2,
                         topLeftX + borderSize / 2 +     getCellDisplayWidthOffset(),
@@ -174,8 +178,8 @@ public class Display extends JComponent
                     ));
                 }
                 if(board.hasBorderAt(i, j, Board.Direction.LEFT)) {
-                    g.setColor(Color.BLACK);
-                    g2.draw(new Line2D.Float(
+                    borderColors.add(Color.BLACK);
+                    borders.add(new Line2D.Float(
                         topLeftX + borderSize / 2,
                         topLeftY + borderSize / 2,
                         topLeftX + borderSize / 2,
@@ -183,6 +187,11 @@ public class Display extends JComponent
                     ));
                 }
             }
+        }
+        
+        for(int i = 0; i < borders.size(); i++) {
+            g.setColor(borderColors.get(i));
+            g2.draw(borders.get(i));
         }
         
         // edge case: bottom right border
