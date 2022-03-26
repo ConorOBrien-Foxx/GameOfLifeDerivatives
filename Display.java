@@ -285,7 +285,11 @@ public class Display extends JComponent
         }
     }
     
-    static int stepDelay = 100;
+    public static int stepDelay = 100;
+    public static void updateStepDelay(JTextField stepField) {
+        stepDelay = Integer.parseInt(stepField.getText());
+    }
+    
     public static void main(String[] args) {
         System.setProperty("sun.java2d.uiScale", "1.0");
         frame = new JFrame();
@@ -318,6 +322,8 @@ public class Display extends JComponent
         JButton helpButton = new JButton("Help");
         JButton nextGenerationButton = new JButton("Next Generation");
         JButton runStopButton = new JButton("Run");
+        JLabel stepLabel = new JLabel("step/ms:");
+        JTextField stepField = new JTextField("300", 3);
         JButton resetButton = new JButton("Reset");
         JButton randomButton = new JButton("Random Seed");
         JLabel densityLabel = new JLabel("Seed Density:");
@@ -326,6 +332,8 @@ public class Display extends JComponent
         buttonsPanel.add(helpButton);
         buttonsPanel.add(nextGenerationButton);
         buttonsPanel.add(runStopButton);
+        buttonsPanel.add(stepLabel);
+        buttonsPanel.add(stepField);
         buttonsPanel.add(resetButton);
         buttonsPanel.add(randomButton);
         buttonsPanel.add(densityLabel);
@@ -343,6 +351,12 @@ public class Display extends JComponent
                 }
             }
         });
+        stepField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateStepDelay(stepField);
+            }
+        });
         helpButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -353,7 +367,6 @@ public class Display extends JComponent
             class RunThread extends Thread {
                 public void run() {
                     while(running) {
-                        // System.out.println("Step");
                         comp.step();
                         if(!comp.board.running) {
                             // stop running
@@ -374,6 +387,7 @@ public class Display extends JComponent
             RunThread thread = null;
             @Override
             public void actionPerformed(ActionEvent e) {
+                updateStepDelay(stepField);
                 runStopButton.setText(running ? "Run" : "Stop");
                 running = !running;
                 

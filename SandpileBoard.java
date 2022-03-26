@@ -5,6 +5,14 @@ import java.awt.Point;
 import GameOfLifeDerivatives.*;
 
 public class SandpileBoard extends Board {
+    public SandpileBoard() {
+        super();
+    }
+    
+    public SandpileBoard(ArrayList<ArrayList<Cell>> grid) {
+        super(grid);
+    }
+    
     public static final int SANDPILE_OVERFLOW = 4;
     @Override
     public void step() {
