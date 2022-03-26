@@ -4,17 +4,33 @@ import java.awt.Color;
 
 public class Cell {
     
+    // these must remain public
     public boolean isActive;
     public int[] entropies;
     public int groupID;
+    // location
+    private int xLoc;
+    private int yLoc;
     
     // initializes to default values
     public Cell() {
         // alive by default
-        this(true);
+        this(true,-1,-1);
+    }
+    
+    // initializes to default values
+    public Cell(int x,int y) {
+        // alive by default
+        this(true,x,y);
     }
 
+    // initializes to default values
     public Cell(boolean alive) {
+        // alive by default
+        this(alive,-1,-1);
+    }
+
+    public Cell(boolean alive, int x, int y) {
         isActive = alive;
         // up, down, left, right
         entropies = new int[4];
@@ -24,6 +40,9 @@ public class Cell {
         entropies[3] = 0;
         // default groupID is 0
         groupID = 0;
+        // locs
+        yLoc = y;
+        xLoc = x;
     }
     
     public Cell(Cell x) {
@@ -66,5 +85,21 @@ public class Cell {
     
     public boolean isDark() {
         return groupID % UNIQUE_COUNT > DARK_THRESHOLD;
+    }
+
+    public int getX(){
+        return xLoc;
+    }
+
+    public int getY(){
+        return yLoc;
+    }
+
+    public void setX(int x){
+        xLoc = x;
+    }
+
+    public void setY(int y){
+        yLoc = y;
     }
 }
