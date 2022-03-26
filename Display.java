@@ -22,7 +22,7 @@ import GameOfLifeDerivatives.*;
 public class Display extends JComponent
                      implements MouseListener, MouseMotionListener {
     private Board board;
-    private int cellDisplayWidth = 30;
+    private int cellDisplayWidth = 50;
     private int borderSize = 4;
     private Set<Point> stroke = new HashSet<Point>();
     int strokeButton = -1;
@@ -31,6 +31,13 @@ public class Display extends JComponent
         board = b;
         addMouseListener(this);
         addMouseMotionListener(this);
+        
+        int gid = 0;
+        for(int j = 0; j < Cell.DIMINISH_TIMES * 2; j++) {
+            for(int i = 0; i < Cell.STRATA_COUNT; i++) {
+                board.getCell(i, j).groupID = gid++;
+            }
+        }
     }
     
     public void reset() {
@@ -127,6 +134,8 @@ public class Display extends JComponent
         Line2D.Float bottomRightRightBorder = null;
         ArrayList<Line2D.Float> borders = new ArrayList<>();
         ArrayList<Color> borderColors = new ArrayList<>();
+                
+        g2.setFont(new Font("Consolas", Font.PLAIN, 20));
         
         for(int i = 0; i < board.getWidth(); i++) {
             for(int j = 0; j < board.getHeight(); j++) {
@@ -138,6 +147,21 @@ public class Display extends JComponent
                     g.setColor(cellColor);
                     g.fillRect(topLeftX, topLeftY, getCellDisplayWidthOffset(), getCellDisplayWidthOffset());
                 }
+                
+                // if(Color.RGBtoHSB(cellColor.getRed(), cellColor.getGreen(), cellColor.getBlue(), null)[2] < 0.5) {
+                if(curCell.isDark()) {
+                    g.setColor(Color.WHITE);
+                }
+                else {
+                    g.setColor(Color.BLACK);
+                }
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.drawString(
+                    curCell.groupID + "",
+                    topLeftX + 3 * borderSize / 2,
+                    topLeftY + getCellDisplayWidthOffset() - borderSize / 2
+                ); 
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
                 
                 if(i + 1 == board.getWidth()) {
                     if(board.hasBorderAt(i, j, Board.Direction.RIGHT)) {

@@ -33,21 +33,30 @@ public class Cell {
         isActive = !isActive;
     }
     
-    private static Color[] ACTIVE_CELL_COLORS = {
-        Color.RED,
-        Color.ORANGE,
-        Color.YELLOW,
-        Color.GREEN,
-        Color.BLUE,
-        Color.CYAN,
-        Color.MAGENTA,
-    };
+    public static final int STRATA_COUNT = 7;
+    public static final int DIMINISH_TIMES = 5;
+    public static final int DARK_THRESHOLD = 13;
+    public static final int UNIQUE_COUNT = STRATA_COUNT * DIMINISH_TIMES;
     public Color getColor() {
-        if(groupID < ACTIVE_CELL_COLORS.length) {
-            return ACTIVE_CELL_COLORS[groupID];
-        }
-        else {
-            return Color.DARK_GRAY;
-        }
+        // divide id into spectra
+        int gid = groupID % UNIQUE_COUNT;
+        float hue = gid % UNIQUE_COUNT % STRATA_COUNT * 1.0f / STRATA_COUNT;
+        float brightness = 1.0f - (gid * 1.0f / STRATA_COUNT / DIMINISH_TIMES);
+        // if(brightness <= 0) {
+            // System.out.println(brightness);
+            // brightness = 1 - (1 - brightness) % 1.0f;
+            // System.out.println(brightness);
+        // }
+        /*
+         * Options for saturation:
+         * - brightness
+         * - 1-(1-brightness)/2
+         * - 1.0f
+         */
+        return Color.getHSBColor(hue, brightness, brightness);
+    }
+    
+    public boolean isDark() {
+        return groupID % UNIQUE_COUNT > DARK_THRESHOLD;
     }
 }
