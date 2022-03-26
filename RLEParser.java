@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import GameOfLifeDerivatives.*;
 
-// parses .rle (standard golly files) and .rlegx (our own file extension)
+// parses .rle (standard golly files) and .rlegold (our own file extension)
 public class RLEParser {
     public int x;
     public int y;
@@ -15,6 +15,7 @@ public class RLEParser {
     
     
     private boolean frozen = false;
+    private boolean goldMode = false;
     private int repeatCount = 1;
     private int maxWidth = 0;
     
@@ -52,8 +53,11 @@ public class RLEParser {
     public void feedLine(String line) {
         if(frozen) return;
         if(line == null) return;
+        if(line.startsWith("#GOLD_RLEX")) {
+            goldMode = true;
+        }
         if(line.startsWith("#")) {
-            // comment, ignore
+            // other kind of comment, ignore
             return;
         }
         if(line.startsWith("x ") || line.startsWith("x=")) {
@@ -76,20 +80,28 @@ public class RLEParser {
         }
         else {
             Cell buildCell = new Cell();
+            char lastCur = 0;
             for(int i = 0; i < line.length(); i++) {
                 char cur = line.charAt(i);
                 if(cur == 'b') {
                     buildCell.isActive = false;
                     addRepeatCell(buildCell);
                     repeatCount = 1;
+                    buildCell.groupID = 0;
                 }
                 else if(cur == 'o') {
                     buildCell.isActive = true;
                     addRepeatCell(buildCell);
                     repeatCount = 1;
+                    buildCell.groupID = 0;
                 }
                 else if(cur == '$') {
                     addRow();
+                }
+                else if(cur == '&') {
+                    if(!goldMode) {
+                        System.out.println("Warning: Gold mode not enabled, so & is ignored.");
+                    }
                 }
                 else if(Character.isDigit(cur)) {
                     int buildInt = cur - '0';
@@ -98,12 +110,19 @@ public class RLEParser {
                         buildInt += cur - '0';
                     }
                     i--;
-                    repeatCount = buildInt;
+                    if(lastCur == '&' && goldMode) {
+                        // custom: set group id
+                        buildCell.groupID = buildInt;
+                    }
+                    else {
+                        repeatCount = buildInt;
+                    }
                 }
                 else if(cur == '!') {
                     freeze();
                     return;
                 }
+                lastCur = line.charAt(i);
             }
         }
     }
