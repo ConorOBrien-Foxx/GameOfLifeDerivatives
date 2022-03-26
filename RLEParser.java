@@ -10,6 +10,7 @@ public class RLEParser {
     public int x;
     public int y;
     public String rule = null;
+    public String engine = null;
     public ArrayList<ArrayList<Cell>> buildGrid = new ArrayList<>();
     public ArrayList<Cell> buildRow = new ArrayList<>();
     
@@ -35,7 +36,13 @@ public class RLEParser {
     
     public Board makeBoard() {
         padGrid();
-        return new Board(this.buildGrid);
+        if(engine == null || engine.equals("gol")) {
+            return new Board(this.buildGrid);
+        }
+        if(engine.equals("sandpile")) {
+            return new SandpileBoard(this.buildGrid);
+        }
+        return null;
     }
     
     public void addRepeatCell(Cell cell) {
@@ -77,6 +84,9 @@ public class RLEParser {
                 }
                 else if(first.equals("rule")) {
                     rule = second;
+                }
+                else if(first.equals("engine")) {
+                    engine = second;
                 }
             }
         }
@@ -129,7 +139,9 @@ public class RLEParser {
     }
     
     public void freeze() {
-        addRow();
+        if(buildRow.size() >= 1) {
+            addRow();
+        }
         frozen = true;
     }
     

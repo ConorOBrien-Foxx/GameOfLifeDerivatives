@@ -46,6 +46,11 @@ public class Display extends JComponent
         addMouseWheelListener(this);
     }
     
+    public void step() {
+        board.step();
+        repaint();
+    }
+    
     public void reset() {
         board.reset();
         repaint();
@@ -280,6 +285,11 @@ public class Display extends JComponent
         }
     }
     
+    public static int stepDelay = 100;
+    public static void updateStepDelay(JTextField stepField) {
+        stepDelay = Integer.parseInt(stepField.getText());
+    }
+    
     public static void main(String[] args) {
         System.setProperty("sun.java2d.uiScale", "1.0");
         frame = new JFrame();
@@ -302,7 +312,7 @@ public class Display extends JComponent
             board = parser.makeBoard();
         }
         else {
-            board = new Board();
+            board = new SandpileBoard();
         }
         
         final Display comp = new Display(board);
@@ -312,6 +322,8 @@ public class Display extends JComponent
         JButton helpButton = new JButton("Help");
         JButton nextGenerationButton = new JButton("Next Generation");
         JButton runStopButton = new JButton("Run");
+        JLabel stepLabel = new JLabel("step/ms:");
+        JTextField stepField = new JTextField("300", 3);
         JButton resetButton = new JButton("Reset");
         JButton randomButton = new JButton("Random Seed");
         JLabel densityLabel = new JLabel("Seed Density:");
@@ -320,6 +332,8 @@ public class Display extends JComponent
         buttonsPanel.add(helpButton);
         buttonsPanel.add(nextGenerationButton);
         buttonsPanel.add(runStopButton);
+        buttonsPanel.add(stepLabel);
+        buttonsPanel.add(stepField);
         buttonsPanel.add(resetButton);
         buttonsPanel.add(randomButton);
         buttonsPanel.add(densityLabel);
@@ -337,6 +351,12 @@ public class Display extends JComponent
                 }
             }
         });
+        stepField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateStepDelay(stepField);
+            }
+        });
         helpButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -344,17 +364,46 @@ public class Display extends JComponent
             }
         });
         runStopButton.addActionListener(new ActionListener() {
+            class RunThread extends Thread {
+                public void run() {
+                    while(running) {
+                        comp.step();
+                        if(!comp.board.running) {
+                            // stop running
+                            actionPerformed(null);
+                            break;
+                        }
+                        try {
+                            Thread.sleep(stepDelay);
+                        }
+                        catch(InterruptedException ex) {
+                            break;
+                        }
+                    }
+                }
+            }
+            
             private boolean running = false;
+            RunThread thread = null;
             @Override
             public void actionPerformed(ActionEvent e) {
+                updateStepDelay(stepField);
                 runStopButton.setText(running ? "Run" : "Stop");
                 running = !running;
+                
+                if(running) {
+                    thread = new RunThread();
+                    thread.start();
+                }
+                else {
+                    thread = null;
+                }
             }
         });
         nextGenerationButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("TODO: advance the generation");
+                comp.step();
             }
         });
         resetButton.addActionListener(new ActionListener() {

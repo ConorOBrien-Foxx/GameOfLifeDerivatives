@@ -13,6 +13,8 @@ public class Board {
     // the board upon which the magic is done
     public ArrayList<ArrayList<Cell>> board;
 
+    public boolean running = true;
+
     // height and width remain constant and are private
     private int height;
     private int width;
@@ -46,9 +48,11 @@ public class Board {
         }
     }
     
+    public void step() {}
+    
     public void debugCoordinates() {
-        for(int i = 0; i < getWidth(); i++) {
-            for(int j = 0; j < getHeight(); j++) {
+        for(int i = 0; i < width; i++) {
+            for(int j = 0; j < height; j++) {
                 System.out.print(
                     getCell(i, j).getX() + "," + getCell(i, j).getY() + " "
                 );
