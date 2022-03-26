@@ -328,7 +328,8 @@ public class Display extends JComponent
         JButton randomButton = new JButton("Random Seed");
         JLabel densityLabel = new JLabel("Seed Density:");
         JTextField densityField = new JTextField("0.5", 3);
-        JButton dev1 = new JButton("[DEV] Group ID Sample");
+        
+        // JButton dev1 = new JButton("[DEV] Group ID Sample");
         buttonsPanel.add(helpButton);
         buttonsPanel.add(nextGenerationButton);
         buttonsPanel.add(runStopButton);
@@ -338,6 +339,8 @@ public class Display extends JComponent
         buttonsPanel.add(randomButton);
         buttonsPanel.add(densityLabel);
         buttonsPanel.add(densityField);
+        
+        /*
         buttonsPanel.add(dev1);
         dev1.addActionListener(new ActionListener() {
             @Override
@@ -350,7 +353,7 @@ public class Display extends JComponent
                     }
                 }
             }
-        });
+        });*/
         stepField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
