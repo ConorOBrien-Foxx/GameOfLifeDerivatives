@@ -48,8 +48,6 @@ public class Board {
         }
     }
     
-    public void step() {}
-    
     public void debugCoordinates() {
         for(int i = 0; i < width; i++) {
             for(int j = 0; j < height; j++) {
