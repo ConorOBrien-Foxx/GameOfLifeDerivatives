@@ -5,8 +5,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Point;
+// import java.awt.event.ActionEvent;
+// import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 
 import javax.swing.JButton;
@@ -25,6 +28,32 @@ public class Display extends JComponent {
     
     public Display(Board b) {
         board = b;
+        addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent me) {
+                Point p = getClickedCellCoordinate(me.getPoint());
+                if(p != null) {
+                    System.out.println("Clicked on cell " + p.x + ", " + p.y);
+                    board.toggleCell(p);
+                    repaint();
+                }
+            }
+        });
+    }
+    
+    public Point getClickedCellCoordinate(int cx, int cy) {
+        int clickOffsetX = cx % getCellDisplayWidthOffset();
+        int clickOffsetY = cy % getCellDisplayWidthOffset();
+        
+        if(clickOffsetX >= cellDisplayWidth || clickOffsetY >= cellDisplayWidth) {
+            return null;
+        }
+        
+        int ix = cx / getCellDisplayWidthOffset();
+        int iy = cy / getCellDisplayWidthOffset();
+        return new Point(ix, iy);
+    }
+    public Point getClickedCellCoordinate(Point p) {
+        return getClickedCellCoordinate(p.x, p.y);
     }
     
     public int getFrameWidth() {
@@ -50,8 +79,8 @@ public class Display extends JComponent {
             for(int j = 0; j < board.getHeight(); j++) {
                 if(board.getCell(i, j).isActive) {
                     g.fillRect(
-                        j * getCellDisplayWidthOffset(),
                         i * getCellDisplayWidthOffset(),
+                        j * getCellDisplayWidthOffset(),
                         cellDisplayWidth,
                         cellDisplayWidth
                     );
@@ -68,7 +97,7 @@ public class Display extends JComponent {
         JPanel displayPanel = new JPanel(new FlowLayout());
         displayPanel.setBorder(new EmptyBorder(30, 30, 30, 30));
         
-        final Display comp = new Display(new Board());
+        final Display comp = new Display(new Board(10, 15));
         displayPanel.add(comp);
         
         testFrame.getContentPane().add(displayPanel, BorderLayout.CENTER);

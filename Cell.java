@@ -26,5 +26,9 @@ public class Cell{
             entropies[i] = entropies[i] - 1;
         }
     }
+    
+    public void toggle() {
+        isActive = !isActive;
+    }
 
 }

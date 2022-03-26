@@ -1,9 +1,10 @@
 package GameOfLifeDerivatives;
 
 import java.util.ArrayList;
+import java.awt.Point;
 import GameOfLifeDerivatives.*;
 
-public class Board{
+public class Board {
 
     public ArrayList<ArrayList<Cell>> board;
 
@@ -11,11 +12,11 @@ public class Board{
     private int height;
     private int width;
 
-    public Board(){
+    public Board() {
         this(15, 15);
     }
 
-    public Board(int w, int h){
+    public Board(int w, int h) {
         height = h;
         width = w;
 
@@ -38,6 +39,14 @@ public class Board{
     public int getWidth() { return width; }
     public int getHeight() { return height; }
     public Cell getCell(int x, int y) { return board.get(y).get(x); }
+    public Cell getCell(Point p) { return getCell(p.x, p.y); }
+    
+    public void toggleCell(int x, int y) {
+        board.get(y).get(x).toggle();
+    }
+    public void toggleCell(Point p) {
+        toggleCell(p.x, p.y);
+    }
 
     public int checkNeighbors(int w, int h){
         // gather the rows
