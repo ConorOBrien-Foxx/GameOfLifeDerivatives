@@ -7,10 +7,20 @@ import GameOfLifeDerivatives.*;
 public class SandpileBoard extends Board {
     public SandpileBoard() {
         super();
+        fillActive();
     }
     
     public SandpileBoard(ArrayList<ArrayList<Cell>> grid) {
         super(grid);
+        fillActive();
+    }
+    
+    public void fillActive() {
+        for(int i = 0; i < getHeight(); i++) {
+            for(int j = 0; j < getWidth(); j++) {
+                getCell(i, j).isActive = true;
+            }
+        }
     }
     
     public static final int SANDPILE_OVERFLOW = 4;

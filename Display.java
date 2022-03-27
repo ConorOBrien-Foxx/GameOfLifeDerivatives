@@ -233,7 +233,12 @@ public class Display extends JComponent
                         borderColors.add(Color.BLACK);
                     }
                     else {
-                        borderColors.add(cellColor);
+                        if(curCell.groupID == board.getCell(i+1, j).groupID && !curCell.isActive) {
+                            borderColors.add(Color.WHITE);
+                        }
+                        else {
+                            borderColors.add(cellColor);
+                        }
                     }
                     // since we process j+1==board.getHeight() last, we guarantee this is correctly set
                     bottomRightRightBorder = new Line2D.Float(
@@ -249,7 +254,12 @@ public class Display extends JComponent
                         borderColors.add(Color.BLACK);
                     }
                     else {
-                        borderColors.add(cellColor);
+                        if(curCell.groupID == board.getCell(i, j+1).groupID && !curCell.isActive) {
+                            borderColors.add(Color.WHITE);
+                        }
+                        else {
+                            borderColors.add(cellColor);
+                        }
                     }
                     borders.add(new Line2D.Float(
                         topLeftX + borderSize / 2,
@@ -340,10 +350,14 @@ public class Display extends JComponent
         JButton exportButton = new JButton("Export");
         JButton importButton = new JButton("Import");
         
+        String[] modeOptions = { "Entropy of Life", "Sandpiles" };
+        JComboBox modeSelect = new JComboBox<>(modeOptions);
+        
         final JFileChooser fc = new JFileChooser("./");
         
         // JButton dev1 = new JButton("[DEV] Group ID Sample");
         buttonsPanel.add(helpButton);
+        buttonsPanel.add(modeSelect);
         buttonsPanel.add(nextGenerationButton);
         buttonsPanel.add(runStopButton);
         buttonsPanel.add(stepLabel);
@@ -355,6 +369,19 @@ public class Display extends JComponent
         buttonsPanel.add(exportButton);
         buttonsPanel.add(importButton);
         
+        modeSelect.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JComboBox cb = (JComboBox)e.getSource();
+                String mode = (String)cb.getSelectedItem();
+                if(mode.equals("Entropy of Life")) {
+                    comp.board = new Board(comp.board.board);
+                }
+                else {
+                    comp.board = new SandpileBoard(comp.board.board);
+                }
+            }
+        });
         exportButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
