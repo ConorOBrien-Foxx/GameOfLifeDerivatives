@@ -53,6 +53,8 @@ public class Cell {
             entropies[i] = x.entropies[i];
         }
         groupID = x.groupID;
+        setX(x.getX());
+        setY(x.getY());
     }
 
     // reduces the entropy of each item in the array
@@ -112,7 +114,7 @@ public class Cell {
     }
 
     public String toString(){
-        return ("x - " + xLoc + ", y - " + yLoc + " ");
+        return ("x - " + xLoc + ", y - " + yLoc + " , GroupID: " + groupID);
     }
 
     

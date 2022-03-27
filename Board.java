@@ -41,8 +41,8 @@ public class Board {
             // populate the columns in each row
             for (int j=0; j<width; j++){
                 Cell aCell = grid.get(i).get(j);
-                aCell.setX(i);
-                aCell.setY(j);
+                aCell.setX(j);
+                aCell.setY(i);
                 row.add(aCell);
             }
             board.add(row);
@@ -238,12 +238,18 @@ public class Board {
         // keep track of the cell
         Cell thisCell = getCell(x, y);
         HashSet<Cell> neighbors = new HashSet<Cell>();
+
+        
         
         // grab the neighbors
         if (thisCell.groupID == 0)
             neighbors = gatherCellNeighbors(x, y);
         else
             neighbors = gatherGroupNeighbors(x, y);
+
+        for (Cell c : neighbors){
+            System.out.println(c);
+        }
         
         // calclate the proportion
         int numberActive = 0;
@@ -252,8 +258,8 @@ public class Board {
         }
         
         // return the proportion
-        System.out.println("X: " + x + ", Y: " + y + " Neighbors: " + neighbors.size());
-        System.out.println("X: " + x + ", Y: " + y + " Number Active: " + numberActive);
+        // System.out.println("X: " + x + ", Y: " + y + " Neighbors: " + neighbors.size());
+        // System.out.println("X: " + x + ", Y: " + y + " Number Active: " + numberActive);
         return ((float)numberActive / (float)neighbors.size());
     }
 
@@ -276,7 +282,7 @@ public class Board {
                 float proportion = checkProportion(j, i); 
                 Cell newCell = new Cell(getCell(j, i));
                 
-                System.out.println(j + "," + i + ": " + proportion); 
+                System.out.println("====" + newCell + ": " + proportion + "===="); 
                 
                 /**
                  * if alive:
