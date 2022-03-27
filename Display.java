@@ -49,8 +49,6 @@ public class Display extends JComponent
     
     public void setBoard(Board b) {
         board = b;
-        
-        System.out.println(getFrameWidth() + " / " + getFrameHeight());
         setSize(getFrameWidth(), getFrameHeight());
         repaint();
         frame.pack();
@@ -388,7 +386,6 @@ public class Display extends JComponent
                 else {
                     comp.board = new SandpileBoard(comp.board.board);
                 }
-                System.out.println("Oh? " + (comp.board instanceof SandpileBoard));
                 comp.repaint();
             }
         });
@@ -398,7 +395,6 @@ public class Display extends JComponent
                 int retval = fc.showSaveDialog(frame);
                 if(retval == JFileChooser.APPROVE_OPTION) {
                     File file = fc.getSelectedFile();
-                    // System.out.println("Save to: " + file.getName());
                     comp.board.dumpRLEToFile(file.getName());
                 }
             }
