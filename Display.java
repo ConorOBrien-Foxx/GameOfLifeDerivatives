@@ -380,6 +380,7 @@ public class Display extends JComponent
                 else {
                     comp.board = new SandpileBoard(comp.board.board);
                 }
+                comp.repaint();
             }
         });
         exportButton.addActionListener(new ActionListener() {
