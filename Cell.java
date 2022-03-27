@@ -3,7 +3,7 @@ package GameOfLifeDerivatives;
 import java.awt.Color;
 
 
-public class Cell{
+public class Cell {
     
     // these must remain public
     public boolean isActive;
@@ -116,10 +116,17 @@ public class Cell{
     }
 
     
-    public boolean equals(Cell another){
+    public boolean equals(Object o){
+        if(!(o instanceof Cell)) return false;
+        Cell another = (Cell) o;
         boolean xEqual = (this.getX() == another.getX());
         boolean yEqual = (this.getY() == another.getY());
         boolean idEqual = (this.groupID == another.groupID);
         return (idEqual || (xEqual && yEqual)); 
+    }
+    
+    // we need a lenient way to group Cells into sets
+    public int hashCode() {
+        return 1;
     }
 }
