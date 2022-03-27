@@ -15,15 +15,17 @@ public class Board {
     public ArrayList<ArrayList<Cell>> board;
 
     public boolean running = true;
-
+    public static final int DEFAULT_ENTROPY = 2;
+    
     // height and width remain constant and are private
     private int height;
     private int width;
     private int entropyLimit;
     private int highestGroup;
+    private LinkedList<Integer> unusedSizes = new LinkedList<>();
 
     public Board() {
-        this(15, 15);
+        this(55, 25);
     }
 
     public Board(int w, int h) {
@@ -50,8 +52,17 @@ public class Board {
             board.add(row);
         }
 
-        entropyLimit = 2;
+        entropyLimit = DEFAULT_ENTROPY;
         highestGroup = 0;
+    }
+    
+    private int makeGroupID() {
+        // if(unusedSizes.size() != 0) {
+            // return unusedSizes.pollLast();
+        // }
+        // else {
+            return ++highestGroup;
+        // }
     }
     
     public String getEngine() {
@@ -84,7 +95,7 @@ public class Board {
         }
 
         highestGroup = 0;
-        entropyLimit = 2;
+        entropyLimit = DEFAULT_ENTROPY;
     }
 
     // creates and returns an empty board object
@@ -249,6 +260,8 @@ public class Board {
         // create an empty board
         ArrayList<ArrayList<Cell>> temp = createEmptyBoard();
         ArrayList<Cell> entropizingCells = new ArrayList<Cell>();
+        
+        boolean anyAlive = false;
 
         // iterate through the rows
         for (int i=0; i<height; i++){
@@ -270,7 +283,10 @@ public class Board {
                  * greater than 39%, 3.5/9, dies
                  */
                 if (newCell.isActive){
-                    if (0.39 > proportion && proportion >= 0.17){ newCell.isActive = true; }
+                    if (0.39 > proportion && proportion >= 0.17) {
+                        newCell.isActive = true;
+                        anyAlive = true;
+                    }
                     else{ newCell.isActive = false; }
                 }
                 /**
@@ -282,6 +298,7 @@ public class Board {
                 else{ 
                     if (0.39 > proportion && proportion >= 0.28){ 
                         newCell.isActive = true; 
+                        anyAlive = true;
                         // we mark it to increase entropy later
                         entropizingCells.add(newCell);
                     }
@@ -302,7 +319,8 @@ public class Board {
         }
         */ 
         increaseEntropy(entropizingCells);
-
+        
+        if(!anyAlive) running = false;
     }
     
     // increases entropy of entropizing cells
@@ -358,9 +376,8 @@ public class Board {
         // if they're both 0, make a new group
         if (group1 == 0 && group2 == 0){
             // System.out.println("Case 1");
-            highestGroup++;
-            cell1.groupID = highestGroup;
-            cell2.groupID = highestGroup;
+            cell1.groupID = makeGroupID();
+            cell2.groupID = cell1.groupID;
         }
         // if one is 0, set it to the other
         else if (group1 == 0){
@@ -380,13 +397,14 @@ public class Board {
                     Cell testCell = getCell(j,i);
                     // check if it has a certain ID
                     int testID = testCell.groupID;
-                    if (testID == group1){
+                    if (testID == group1 || testID == group2){
                         // if it does, fix it
                         testCell.groupID = group2;
                         testCell.isActive = true;
                     }  
                 }
             }
+            unusedSizes.addFirst(group1);
         }
     }
 

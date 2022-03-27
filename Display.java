@@ -69,7 +69,7 @@ public class Display extends JComponent
     public void randomize(float density) {
         for(int i = 0; i < board.getWidth(); i++) {
             for(int j = 0; j < board.getHeight(); j++) {
-                if(Math.random() > density) board.getCell(i, j).toggle();
+                if(Math.random() < density) board.getCell(i, j).toggle();
             }
         }
     }
@@ -199,7 +199,9 @@ public class Display extends JComponent
         ArrayList<Line2D.Float> borders = new ArrayList<>();
         ArrayList<Color> borderColors = new ArrayList<>();
         
-        g2.setFont(new Font("Consolas", Font.PLAIN, 20));
+        Font large = new Font("Consolas", Font.PLAIN, 20);
+        Font small = new Font("Consolas", Font.PLAIN, 12);
+        
         
         for(int i = 0; i < board.getWidth(); i++) {
             for(int j = 0; j < board.getHeight(); j++) {
@@ -219,6 +221,12 @@ public class Display extends JComponent
                     g.setColor(Color.BLACK);
                 }
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                if(curCell.groupID > 99) {
+                    g2.setFont(small);
+                }
+                else {
+                    g2.setFont(large);
+                }
                 g2.drawString(
                     curCell.groupID == GROUP_ID_SETTING
                         ? "--"
@@ -234,7 +242,7 @@ public class Display extends JComponent
                     }
                     else {
                         if(curCell.groupID == board.getCell(i+1, j).groupID && !curCell.isActive) {
-                            borderColors.add(Color.WHITE);
+                            borderColors.add(new Color(0,0,0,0));
                         }
                         else {
                             borderColors.add(cellColor);
@@ -255,7 +263,7 @@ public class Display extends JComponent
                     }
                     else {
                         if(curCell.groupID == board.getCell(i, j+1).groupID && !curCell.isActive) {
-                            borderColors.add(Color.WHITE);
+                            borderColors.add(new Color(0,0,0,0));
                         }
                         else {
                             borderColors.add(cellColor);
@@ -380,6 +388,7 @@ public class Display extends JComponent
                 else {
                     comp.board = new SandpileBoard(comp.board.board);
                 }
+                System.out.println("Oh? " + (comp.board instanceof SandpileBoard));
                 comp.repaint();
             }
         });
@@ -452,6 +461,7 @@ public class Display extends JComponent
                 running = !running;
                 
                 if(running) {
+                    comp.board.running = true;
                     thread = new RunThread();
                     thread.start();
                 }

@@ -18,7 +18,7 @@ public class SandpileBoard extends Board {
     public void fillActive() {
         for(int i = 0; i < getHeight(); i++) {
             for(int j = 0; j < getWidth(); j++) {
-                getCell(i, j).isActive = true;
+                getCell(j, i).isActive = true;
             }
         }
     }
@@ -30,8 +30,8 @@ public class SandpileBoard extends Board {
         ArrayList<Point> toppleCandidates = new ArrayList<>();
         for(int i = 0; i < getHeight(); i++) {
             for(int j = 0; j < getWidth(); j++) {
-                if(getCell(i, j).groupID >= SANDPILE_OVERFLOW) {
-                    toppleCandidates.add(new Point(i, j));
+                if(getCell(j, i).groupID >= SANDPILE_OVERFLOW) {
+                    toppleCandidates.add(new Point(j, i));
                 }
             }
         }

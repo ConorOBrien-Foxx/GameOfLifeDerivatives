@@ -1,2 +1,1 @@
-javac -d . *.java 
-pause
+javac -d . *.java
