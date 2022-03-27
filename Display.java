@@ -1,5 +1,7 @@
 package GameOfLifeDerivatives;
 
+import java.io.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,6 +46,14 @@ public class Display extends JComponent
         addMouseListener(this);
         addMouseMotionListener(this);
         addMouseWheelListener(this);
+    }
+    
+    public void setBoard(Board b) {
+        board = b;
+        System.out.println(getFrameWidth() + " / " + getFrameHeight());
+        setSize(getFrameWidth(), getFrameHeight());
+        repaint();
+        frame.pack();
     }
     
     public void step() {
@@ -297,22 +307,21 @@ public class Display extends JComponent
         
         JPanel displayPanel = new JPanel(new FlowLayout());
         displayPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        
-        RLEParser parser;
         Board board;
-        if(args.length > 0) {
-            parser = RLEParser.fromFile(args[0]);
-            if(parser == null) {
-                System.out.println("Could not read file " + args[0]);
-                return;
+        {
+            RLEParser parser = null;
+            if(args.length > 0) {
+                parser = RLEParser.fromFile(args[0]);
+                if(parser == null) {
+                    System.out.println("Could not read file " + args[0]);
+                    return;
+                }
+                parser.dump();
+                board = parser.makeBoard();
             }
-            System.out.println("x    = " + parser.x);
-            System.out.println("y    = " + parser.y);
-            System.out.println("rule = " + parser.rule);
-            board = parser.makeBoard();
-        }
-        else {
-            board = new Board();
+            else {
+                board = new Board();
+            }
         }
         
         final Display comp = new Display(board);
@@ -328,7 +337,12 @@ public class Display extends JComponent
         JButton randomButton = new JButton("Random Seed");
         JLabel densityLabel = new JLabel("Seed Density:");
         JTextField densityField = new JTextField("0.5", 3);
-        JButton dev1 = new JButton("[DEV] Group ID Sample");
+        JButton exportButton = new JButton("Export");
+        JButton importButton = new JButton("Import");
+        
+        final JFileChooser fc = new JFileChooser("./");
+        
+        // JButton dev1 = new JButton("[DEV] Group ID Sample");
         buttonsPanel.add(helpButton);
         buttonsPanel.add(nextGenerationButton);
         buttonsPanel.add(runStopButton);
@@ -338,16 +352,34 @@ public class Display extends JComponent
         buttonsPanel.add(randomButton);
         buttonsPanel.add(densityLabel);
         buttonsPanel.add(densityField);
-        buttonsPanel.add(dev1);
-        dev1.addActionListener(new ActionListener() {
+        buttonsPanel.add(exportButton);
+        buttonsPanel.add(importButton);
+        
+        exportButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int gid = 0;
-                for(int j = 0; j < Cell.DIMINISH_TIMES * 2; j++) {
-                    for(int i = 0; i < Cell.STRATA_COUNT; i++) {
-                        comp.board.getCell(i, j).groupID = gid++;
-                        comp.repaint();
+                int retval = fc.showSaveDialog(frame);
+                if(retval == JFileChooser.APPROVE_OPTION) {
+                    File file = fc.getSelectedFile();
+                    // System.out.println("Save to: " + file.getName());
+                    comp.board.dumpRLEToFile(file.getName());
+                }
+            }
+        });
+        importButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int retval = fc.showOpenDialog(frame);
+                if(retval == JFileChooser.APPROVE_OPTION) {
+                    File file = fc.getSelectedFile();
+                    
+                    RLEParser parser = RLEParser.fromFile(file.getName());
+                    if(parser == null) {
+                        System.out.println("Could not read file " + args[0]);
+                        return;
                     }
+                    parser.dump();
+                    comp.setBoard(parser.makeBoard());
                 }
             }
         });

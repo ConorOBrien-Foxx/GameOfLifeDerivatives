@@ -145,6 +145,13 @@ public class RLEParser {
         frozen = true;
     }
     
+    public void dump() {
+        System.out.println("x      = " + x);
+        System.out.println("y      = " + y);
+        System.out.println("rule   = " + rule);
+        System.out.println("engine = " + engine);
+    }
+    
     public static RLEParser fromFile(String path) {
         RLEParser parser = new RLEParser();
         try(BufferedReader br = new BufferedReader(new FileReader(path))) {
