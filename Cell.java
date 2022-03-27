@@ -59,7 +59,7 @@ public class Cell {
 
     // reduces the entropy of each item in the array
     public void reduceEntropy() {
-        for (int i=0; i<3; i++){
+        for (int i=0; i<4; i++){
             entropies[i] = entropies[i] - 1;
         }
     }

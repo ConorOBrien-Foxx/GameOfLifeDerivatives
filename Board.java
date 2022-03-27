@@ -19,6 +19,8 @@ public class Board {
     // height and width remain constant and are private
     private int height;
     private int width;
+    private int entropyLimit;
+    private int highestGroup;
 
     public Board() {
         this(15, 15);
@@ -47,6 +49,9 @@ public class Board {
             }
             board.add(row);
         }
+
+        entropyLimit = 2;
+        highestGroup = 0;
     }
     
     public String getEngine() {
@@ -77,6 +82,9 @@ public class Board {
             }
             board.add(row);
         }
+
+        highestGroup = 0;
+        entropyLimit = 2;
     }
 
     // creates and returns an empty board object
@@ -180,7 +188,6 @@ public class Board {
         Cell down = getCell(x, y+1);
         Cell left = getCell(x-1, y);
         Cell right = getCell(x+1, y);
-
         Cell upLeft = getCell(x-1, y-1);
         Cell downLeft = getCell(x-1, y+1);
         Cell upRight = getCell(x+1, y-1);
@@ -191,7 +198,6 @@ public class Board {
         if (down.groupID != thisGroupID || thisGroupID == 0) { neighbors.add(down); } 
         if (left.groupID != thisGroupID || thisGroupID == 0) { neighbors.add(left); } 
         if (right.groupID != thisGroupID || thisGroupID == 0) { neighbors.add(right); } 
-
         if (upLeft.groupID != thisGroupID || thisGroupID == 0) { neighbors.add(upLeft); } 
         if (downLeft.groupID != thisGroupID || thisGroupID == 0) { neighbors.add(downLeft); } 
         if (upRight.groupID != thisGroupID || thisGroupID == 0) { neighbors.add(upRight); } 
@@ -202,36 +208,6 @@ public class Board {
 
         return(neighbors);
     }
-
-    /*
-    // removes neighbors belonging to the same group
-    public ArrayList<Cell> removeDuplicates(ArrayList<Cell> neighbors){
-        // gather all of the elements and their numbers
-        // make a new empty list
-        ArrayList<Integer> neighborIDs = new ArrayList<Integer>();
-        ArrayList<Integer[]> locs = new ArrayList<Integer[]>();
-        ArrayList<Cell> newNeighbors = new ArrayList<Cell>();
-        // add things to the empty list as they go along
-        for (int i=0; i<neighbors.size(); i++){
-            Cell thisOne = neighbors.get(i);
-            Integer thisID = thisOne.groupID;
-            Integer[] loc = thisOne.getLoc();
-            // if it's a zero, check if it was included
-            if (thisID == 0){ 
-                if (!(locs.contains(loc))){ 
-                    locs.add(loc); 
-                    newNeighbors.add(thisOne);
-                } 
-            }
-            // if not, check that it wasn't included already 
-            else if (!neighborIDs.contains(thisID)){
-                newNeighbors.add(thisOne);
-                neighborIDs.add(thisID);
-            }
-        }
-        return newNeighbors;
-    }
-    */ 
 
     // check the proportion of neighbors that are active
     public float checkProportion(int x, int y){
@@ -247,10 +223,12 @@ public class Board {
         else
             neighbors = gatherGroupNeighbors(x, y);
 
+        /*
         for (Cell c : neighbors){
             System.out.println(c);
         }
-        
+        */
+
         // calclate the proportion
         int numberActive = 0;
         for (Cell c : neighbors){
@@ -270,6 +248,7 @@ public class Board {
     public void step(){
         // create an empty board
         ArrayList<ArrayList<Cell>> temp = createEmptyBoard();
+        ArrayList<Cell> entropizingCells = new ArrayList<Cell>();
 
         // iterate through the rows
         for (int i=0; i<height; i++){
@@ -282,7 +261,7 @@ public class Board {
                 float proportion = checkProportion(j, i); 
                 Cell newCell = new Cell(getCell(j, i));
                 
-                System.out.println("====" + newCell + ": " + proportion + "===="); 
+                //System.out.println("====" + newCell + ": " + proportion + "===="); 
                 
                 /**
                  * if alive:
@@ -291,8 +270,8 @@ public class Board {
                  * greater than 39%, 3.5/9, dies
                  */
                 if (newCell.isActive){
-                    if (0.39 > proportion && proportion >= 0.17){ willBeAlive = true; }
-                    else{ willBeAlive = false; }
+                    if (0.39 > proportion && proportion >= 0.17){ newCell.isActive = true; }
+                    else{ newCell.isActive = false; }
                 }
                 /**
                  * if dead:
@@ -300,21 +279,117 @@ public class Board {
                  * between 28%, 2.5/9, and 39%, 3.5/9, becomes alive
                  * greater than 39%, 3.5/9, remains dead
                  */
-                else{
-                    if (0.39 > proportion && proportion >= 0.28){ willBeAlive = true; }
-                    else{ willBeAlive = false; }
+                else{ 
+                    if (0.39 > proportion && proportion >= 0.28){ 
+                        newCell.isActive = true; 
+                        // we mark it to increase entropy later
+                        entropizingCells.add(newCell);
+                    }
+                    else{ newCell.isActive = false; }
                 }
                 
                 // grab the new cell and set it accordingly
-                newCell.isActive = willBeAlive;
                 thisRow.set(j,newCell);
             }
         }
 
         // replace the board!
         board = temp; 
+        // now we increase the entropy on the indicated cells
+        /* 
+        for (Cell thisCell : entropizingCells){
+            System.out.println("Entropizing: " + thisCell);
+        }
+        */ 
+        increaseEntropy(entropizingCells);
+
     }
     
+    // increases entropy of entropizing cells
+    private void increaseEntropy(ArrayList<Cell> entropizingCells){
+        for (Cell thisCell : entropizingCells){
+            // cursed
+            int y = thisCell.getX();
+            int x = thisCell.getY();
+
+            Cell up = getCell(x, y-1);
+            Cell down = getCell(x, y+1);
+            Cell left = getCell(x-1, y);
+            Cell right = getCell(x+1, y);
+
+            /*
+            System.out.println("up: " + up);
+            System.out.println("down: " + down);
+            System.out.println("left: " + left);
+            System.out.println("right: " + right);
+            */
+
+            // up, down, left, right
+            down.entropies[0]++;
+            up.entropies[1]++;
+            right.entropies[2]++;
+            left.entropies[3]++;
+            
+            // System.out.println("down.entropies[0]: " + down.entropies[0]);
+            // System.out.println("entropyLimit: " + entropyLimit);
+            if (down.entropies[0] > entropyLimit){
+                merge(thisCell, up);
+            }
+            if (up.entropies[1] > entropyLimit){
+                merge(thisCell, down);
+            }
+            if (right.entropies[2] > entropyLimit){
+                merge(thisCell, left);
+            }
+            if (left.entropies[3] > entropyLimit){
+                merge(thisCell, right);
+            }
+        }
+    }
+
+    private void merge(Cell cell1, Cell cell2){
+        // System.out.println("Cell1 merge: " + cell1);
+        // System.out.println("Cell2 merge: " + cell2);
+
+        int group1 = cell1.groupID;
+        int group2 = cell2.groupID;
+        cell1.isActive = true;
+        cell2.isActive = true;
+        // if they're both 0, make a new group
+        if (group1 == 0 && group2 == 0){
+            // System.out.println("Case 1");
+            highestGroup++;
+            cell1.groupID = highestGroup;
+            cell2.groupID = highestGroup;
+        }
+        // if one is 0, set it to the other
+        else if (group1 == 0){
+            // System.out.println("Case 2A");
+            cell1.groupID = group2;
+        }
+        else if (group2 == 0){
+            // System.out.println("Case 2B");
+            cell2.groupID = group1;
+        }
+        // else, fix all group1 to group2
+        else{
+            // System.out.println("Case 3");
+            for (int i=0; i<height; i++){
+                for (int j=0; j<width; j++){
+                    // grab a cell
+                    Cell testCell = getCell(j,i);
+                    // check if it has a certain ID
+                    int testID = testCell.groupID;
+                    if (testID == group1){
+                        // if it does, fix it
+                        testCell.groupID = group2;
+                        testCell.isActive = true;
+                    }  
+                }
+            }
+        }
+    }
+
     public void dumpRLEToFile(String path) {
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
               new FileOutputStream(path), "utf-8"))) {
