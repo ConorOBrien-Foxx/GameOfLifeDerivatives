@@ -38,7 +38,6 @@ public class Display extends JComponent
     private int borderSize = 4;
     private Set<Point> stroke = new HashSet<Point>();
     private int strokeButton = -1;
-    private boolean controlHeld = false;
     private boolean blockFurtherMouseDown = false;
     
     public Display(Board b) {
@@ -50,6 +49,7 @@ public class Display extends JComponent
     
     public void setBoard(Board b) {
         board = b;
+        
         System.out.println(getFrameWidth() + " / " + getFrameHeight());
         setSize(getFrameWidth(), getFrameHeight());
         repaint();
@@ -198,7 +198,7 @@ public class Display extends JComponent
         Line2D.Float bottomRightRightBorder = null;
         ArrayList<Line2D.Float> borders = new ArrayList<>();
         ArrayList<Color> borderColors = new ArrayList<>();
-                
+        
         g2.setFont(new Font("Consolas", Font.PLAIN, 20));
         
         for(int i = 0; i < board.getWidth(); i++) {
