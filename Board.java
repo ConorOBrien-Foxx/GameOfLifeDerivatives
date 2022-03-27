@@ -1,7 +1,7 @@
 package GameOfLifeDerivatives;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.awt.Point;
 import GameOfLifeDerivatives.*;
 
@@ -252,6 +252,8 @@ public class Board {
         }
         
         // return the proportion
+        System.out.println("X: " + x + ", Y: " + y + " Neighbors: " + neighbors.size());
+        System.out.println("X: " + x + ", Y: " + y + " Number Active: " + numberActive);
         return ((float)numberActive / (float)neighbors.size());
     }
 
