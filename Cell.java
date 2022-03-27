@@ -2,7 +2,8 @@ package GameOfLifeDerivatives;
 
 import java.awt.Color;
 
-public class Cell {
+
+public class Cell{
     
     // these must remain public
     public boolean isActive;
@@ -101,5 +102,24 @@ public class Cell {
 
     public void setY(int y){
         yLoc = y;
+    }
+
+    public Integer[] getLoc(){
+        Integer[] loc = new Integer[2];
+        loc[0] = xLoc;
+        loc[1] = yLoc;  
+        return loc;
+    }
+
+    public String toString(){
+        return ("x - " + xLoc + ", y - " + yLoc + " ");
+    }
+
+    
+    public boolean equals(Cell another){
+        boolean xEqual = (this.getX() == another.getX());
+        boolean yEqual = (this.getY() == another.getY());
+        boolean idEqual = (this.groupID == another.groupID);
+        return (idEqual || (xEqual && yEqual)); 
     }
 }

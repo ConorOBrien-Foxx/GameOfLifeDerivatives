@@ -1,6 +1,6 @@
 package GameOfLifeDerivatives;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.awt.Point;
 import GameOfLifeDerivatives.*;
 
@@ -135,7 +135,7 @@ public class Board {
     }
 
     // gathers ALL neighbors of a group
-    public ArrayList<Cell> gatherGroupNeighbors(int x, int y){
+    public HashSet<Cell> gatherGroupNeighbors(int x, int y){
         // grab the cell and its groupID
         Cell thisCell = getCell(x, y);
         int groupID = thisCell.groupID;
@@ -145,7 +145,7 @@ public class Board {
             groupMembers = gatherGroupMembers(groupID);
         }
         // gather the unique neighbors of every member
-        ArrayList<Cell> groupNeighbors = new ArrayList<Cell>();
+        HashSet<Cell> groupNeighbors = new HashSet<Cell>();
         // up loop
         for (int i=0; i<groupMembers.size(); i++){
             // grab a member
@@ -154,18 +154,18 @@ public class Board {
             int xLoc = thisMember.getX();
             int yLoc = thisMember.getY();
             // grab its neighbors
-            ArrayList<Cell> cellNeighbors = gatherCellNeighbors(xLoc, yLoc);
+            HashSet<Cell> cellNeighbors = gatherCellNeighbors(xLoc, yLoc);
             groupNeighbors.addAll(cellNeighbors); 
         }      
 
         // remove dupes and return
-        groupNeighbors = removeDuplicates(groupNeighbors);
+        // groupNeighbors = removeDuplicates(groupNeighbors);
         return groupNeighbors;
     }
-
+    
     // grabs the neighbors of an individual cell, except those in the same group
-    public ArrayList<Cell> gatherCellNeighbors(int x, int y){
-        ArrayList<Cell> neighbors = new ArrayList<Cell>();
+    public HashSet<Cell> gatherCellNeighbors(int x, int y){
+        HashSet<Cell> neighbors = new HashSet<Cell>();
         // find the cell and groupID
         Cell thisCell = getCell(x, y);
         int thisGroupID = thisCell.groupID;
@@ -193,36 +193,50 @@ public class Board {
         if (downRight.groupID != thisGroupID || thisGroupID == 0) { neighbors.add(downRight); } 
 
         // remove dupes and return
-        neighbors = removeDuplicates(neighbors);
+        // neighbors = removeDuplicates(neighbors);
+
         return(neighbors);
     }
 
+    /*
     // removes neighbors belonging to the same group
     public ArrayList<Cell> removeDuplicates(ArrayList<Cell> neighbors){
         // gather all of the elements and their numbers
         // make a new empty list
         ArrayList<Integer> neighborIDs = new ArrayList<Integer>();
+        ArrayList<Integer[]> locs = new ArrayList<Integer[]>();
         ArrayList<Cell> newNeighbors = new ArrayList<Cell>();
         // add things to the empty list as they go along
         for (int i=0; i<neighbors.size(); i++){
             Cell thisOne = neighbors.get(i);
             Integer thisID = thisOne.groupID;
-            // if it's a zero it's added no matter what
-            if (thisID == 0){ newNeighbors.add(thisOne); }
+            Integer[] loc = thisOne.getLoc();
+            // if it's a zero, check if it was included
+            if (thisID == 0){ 
+                if (!(locs.contains(loc))){ 
+                    locs.add(loc); 
+                    newNeighbors.add(thisOne);
+                } 
+            }
             // if not, check that it wasn't included already 
-            else if (neighborIDs.contains(thisID)){
-                newNeighbors.add(thisOne);
-                neighborIDs.add(thisID);
+            else if (!(neighborIDs.contains(thisID))){
+                if (!(locs.contains(loc))){ 
+                    locs.add(loc);
+                    newNeighbors.add(thisOne);
+                    neighborIDs.add(thisID);
+                    
+                }
             }
         }
         return newNeighbors;
     }
+    */ 
 
     // check the proportion of neighbors that are active
     public float checkProportion(int x, int y){
         // keep track of the cell
         Cell thisCell = getCell(x, y);
-        ArrayList<Cell> neighbors = new ArrayList<Cell>();
+        HashSet<Cell> neighbors = new HashSet<Cell>();
         
         // grab the neighbors
         if (thisCell.groupID == 0)
@@ -232,9 +246,8 @@ public class Board {
         
         // calclate the proportion
         int numberActive = 0;
-        for (int i=0; i<neighbors.size(); i++){
-            Cell thisOne = neighbors.get(i);
-            if (thisOne.isActive) { numberActive++; }
+        for (Cell c : neighbors){
+            if (c.isActive) { numberActive++; }
         }
 
         // return the proportion
