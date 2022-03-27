@@ -1,5 +1,6 @@
 package GameOfLifeDerivatives;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.awt.Point;
 import GameOfLifeDerivatives.*;
@@ -46,6 +47,10 @@ public class Board {
             }
             board.add(row);
         }
+    }
+    
+    public String getEngine() {
+        return "gol";
     }
     
     public void debugCoordinates() {
@@ -210,7 +215,7 @@ public class Board {
             // if it's a zero it's added no matter what
             if (thisID == 0){ newNeighbors.add(thisOne); }
             // if not, check that it wasn't included already 
-            else if (neighborIDs.contains(thisID)){
+            else if (!neighborIDs.contains(thisID)){
                 newNeighbors.add(thisOne);
                 neighborIDs.add(thisID);
             }
@@ -236,7 +241,7 @@ public class Board {
             Cell thisOne = neighbors.get(i);
             if (thisOne.isActive) { numberActive++; }
         }
-
+        
         // return the proportion
         return ((float)numberActive / (float)neighbors.size());
     }
@@ -259,6 +264,8 @@ public class Board {
                 boolean willBeAlive;
                 float proportion = checkProportion(j, i); 
                 Cell newCell = new Cell(getCell(j, i));
+                
+                System.out.println(j + "," + i + ": " + proportion); 
                 
                 /**
                  * if alive:
@@ -289,5 +296,40 @@ public class Board {
 
         // replace the board!
         board = temp; 
+    }
+    
+    public void dumpRLEToFile(String path) {
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+              new FileOutputStream(path), "utf-8"))) {
+            writer.write("#GOLD_RLEX\n");
+            writer.write("x = 0, y = 0, engine = " + getEngine() + '\n');
+            Cell previous = null, current;
+            int runLength = 0;
+            for(int i = 0; i < height; i++) {
+                for(int j = 0; j < width; j++) {
+                    current = getCell(j, i);
+                    if(previous == null) {
+                        previous = current;
+                        runLength = 1;
+                    }
+                    else if(current.groupID != previous.groupID || current.isActive != previous.isActive) {
+                        writer.write(runLength + "&" + previous.groupID);
+                        writer.write(previous.isActive ? 'o' : 'b');
+                        runLength = 1;
+                    }
+                    else {
+                        runLength++;
+                    }
+                    previous = current;
+                }
+                writer.write(runLength + "&" + previous.groupID);
+                writer.write(previous.isActive ? 'o' : 'b');
+                previous = null;
+                writer.write("$\n");
+            }
+        }
+        catch(IOException ex) {
+            System.out.println("unable to save file");
+        }
     }
 }
