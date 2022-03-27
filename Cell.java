@@ -119,7 +119,7 @@ public class Cell{
     public boolean equals(Cell another){
         boolean xEqual = (this.getX() == another.getX());
         boolean yEqual = (this.getY() == another.getY());
-        boolean idEqual = (this.groupID == another.groupID);
+        boolean idEqual = (this.groupID == another.groupID && this.groupID != 0);
         return (idEqual || (xEqual && yEqual)); 
     }
 }
